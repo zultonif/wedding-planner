@@ -4,6 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <title>Wedding Planner — Zultoni & Beska</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="shortcut icon" href="/favicon.svg">
+  <meta name="theme-color" content="#0a0612">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -440,6 +444,7 @@
       </div>
       <div class="rsvp-actions">
         <button class="btn btn-gold" onclick="saveRSVP()">✦ Simpan RSVP</button>
+        <button class="btn btn-ghost" onclick="printRSVP()">🖨️ Cetak Undangan</button>
         <button class="btn btn-ghost" onclick="printRSVPList()">🖨️ Cetak Daftar Tamu</button>
       </div>
       <hr class="rsvp-divider">
@@ -877,7 +882,7 @@ function updateProgress(pctId,barId,data){
   $(pctId).textContent=pct+'%';$(barId).style.width=pct+'%';
 }
 
-/* PRINT CHECKLIST */
+/* PRINT CHECKLIST — versi lengkap dengan ringkasan mewah */
 function printChecklist(sheet){
   const el=$(sheet.toLowerCase());if(!el)return;
   const items=el.querySelectorAll('.task-item:not(.item-pending)');
@@ -890,20 +895,121 @@ function printChecklist(sheet){
     totalBudget+=rawBgt;const link=item.querySelector('.link-open-btn')?.href||'';
     const isSudah=statusEl?.classList.contains('pill-sudah'),isProses=statusEl?.classList.contains('pill-proses');
     if(isSudah)totalSudah++;else if(isProses)totalProses++;else totalBelum++;
-    const ss=isSudah?'color:#2a7a50;font-weight:700;background:#eafaf2;padding:3px 10px;border-radius:20px;':isProses?'color:#8a5c00;background:#fff8e1;padding:3px 10px;border-radius:20px;':'color:#666;background:#f5f5f5;padding:3px 10px;border-radius:20px;';
-    const linkCol=sheet==='Seserahan'?('<td style="text-align:center;">'+(link?'<a href="'+esc(link)+'" style="color:#7c5aaa;font-size:11px;">Lihat →</a>':'-')+'</td>'):'';
-    rows+='<tr><td style="text-align:center;color:#aaa;">'+(idx+1)+'</td><td>'+esc(name)+'</td><td style="text-align:center;"><span style="'+ss+'font-size:11px;">'+esc(statusTxt)+'</span></td><td style="text-align:right;">'+(rawBgt>0?'Rp '+rawBgt.toLocaleString('id-ID'):'—')+'</td>'+linkCol+'</tr>';
+    const statusStyle=isSudah?'color:#2a7a50;font-weight:700;background:#eafaf2;padding:3px 10px;border-radius:20px;':isProses?'color:#8a5c00;font-weight:700;background:#fff8e1;padding:3px 10px;border-radius:20px;':'color:#666;background:#f5f5f5;padding:3px 10px;border-radius:20px;';
+    const linkCol=sheet==='Seserahan'?('<td style="text-align:center;">'+(link?'<a href="'+esc(link)+'" style="color:#7c5aaa;font-size:11px;font-weight:600;">Lihat →</a>':'-')+'</td>'):'';
+    rows+='<tr><td style="text-align:center;color:#aaa;font-size:12px;">'+(idx+1)+'</td><td style="font-weight:500;">'+esc(name)+'</td><td style="text-align:center;"><span style="'+statusStyle+'font-size:11px;">'+esc(statusTxt)+'</span></td><td style="text-align:right;font-weight:600;font-size:13px;">'+(rawBgt>0?'Rp '+rawBgt.toLocaleString('id-ID'):'—')+'</td>'+linkCol+'</tr>';
   });
-  const pct=Math.min(Math.round(totalSudah/(items.length||1)*100),100);
-  const dateStr=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const linkHeader=sheet==='Seserahan'?'<th style="text-align:center;">Link</th>':'';
   const emojiMap={Lamaran:'💍',Pernikahan:'🌸',Seserahan:'🎁'};
+  const pct=Math.min(Math.round((totalSudah/(items.length||1))*100),100);
+  const dateStr=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const css=`*{box-sizing:border-box;margin:0;padding:0}body{font-family:'DM Sans',sans-serif;padding:36px;color:#1e0e30;max-width:900px;margin:0 auto;background:#fff}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;padding-bottom:16px;border-bottom:2px solid #ede0f8}
+.page-head-left .ttl{font-family:'Playfair Display',serif;font-size:28px;color:#3d2468;margin-bottom:2px}
+.page-head-left .sub{font-size:12px;color:#a07dc8;letter-spacing:.04em}
+.page-head-left .couple{font-size:13px;color:#7c5aaa;font-weight:600;margin-top:4px}
+.page-head-right{text-align:right}.page-head-right .date-lbl{font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:.1em}
+.page-head-right .date-val{font-size:12px;color:#888;margin-top:3px}
+.summary-row{display:flex;gap:12px;margin-bottom:22px}
+.sum-card{flex:1;border-radius:10px;padding:12px 16px;text-align:center}
+.sum-card.total{background:#f5f0ff;border:1px solid #d0b0f0}.sum-card.sudah{background:#eafaf2;border:1px solid #a0d8b8}
+.sum-card.proses{background:#fff8e1;border:1px solid #f0d080}.sum-card.belum{background:#f9f9f9;border:1px solid #ddd}
+.sum-card .snum{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;line-height:1}
+.sum-card.total .snum{color:#5b3a8a}.sum-card.sudah .snum{color:#2a7a50}.sum-card.proses .snum{color:#8a5c00}.sum-card.belum .snum{color:#888}
+.sum-card .slbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#999;margin-top:5px;font-weight:600}
+table{width:100%;border-collapse:collapse;margin-bottom:24px}
+thead tr{background:linear-gradient(135deg,#f0e8ff,#ede0f8)}
+th{padding:10px 14px;text-align:left;font-size:10px;letter-spacing:.07em;text-transform:uppercase;border-bottom:2px solid #c0a0e0;color:#5b3a8a;font-weight:600}
+td{padding:11px 14px;border-bottom:1px solid #f0e8ff;font-size:13px;vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}tbody tr:nth-child(even) td{background:#faf6ff}
+.budget-summary{background:linear-gradient(135deg,#f5f0ff,#ede0f8);border:1px solid #c0a0e0;border-radius:14px;padding:20px 24px;margin-bottom:20px}
+.bs-title{font-family:'Playfair Display',serif;font-size:16px;color:#3d2468;margin-bottom:14px}
+.bs-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(192,160,224,.3)}
+.bs-row:last-child{border-bottom:none}.bs-label{font-size:12px;color:#7c5aaa}.bs-value{font-size:14px;font-weight:700;color:#3d2468}
+.bs-row.grand{background:rgba(92,58,138,.08);margin:0 -24px;padding:10px 24px;border-radius:0 0 14px 14px;border-bottom:none}
+.bs-row.grand .bs-label{font-size:13px;color:#3d2468;font-weight:600}.bs-row.grand .bs-value{font-size:20px;color:#5b3a8a}
+.prog-bar-wrap{margin-top:10px}.prog-bar-lbl{display:flex;justify-content:space-between;font-size:10px;color:#a07dc8;margin-bottom:4px}
+.prog-bar-track{background:#e0d0f0;border-radius:99px;height:6px;overflow:hidden}
+.prog-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#7c5aaa,#d4a0b0)}
+.footer{font-size:10px;color:#bbb;text-align:center;padding-top:14px;border-top:1px solid #ede0f8;letter-spacing:.04em}
+@media print{body{padding:16px}}`;
   const w=window.open('','_blank');if(!w){showMessage('⚠ Pop-up diblokir browser.');return;}
-  w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Checklist '+sheet+'</title><link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:\'DM Sans\',sans-serif;padding:36px;color:#1e0e30;max-width:900px;margin:0 auto}h2{font-family:\'Playfair Display\',serif;font-size:26px;color:#3d2468;margin-bottom:4px}.sub{font-size:12px;color:#888;margin-bottom:20px}table{width:100%;border-collapse:collapse;margin-bottom:24px}th{background:linear-gradient(135deg,#f0e8ff,#ede0f8);padding:10px 14px;text-align:left;font-size:10px;letter-spacing:.07em;text-transform:uppercase;border-bottom:2px solid #c0a0e0;color:#5b3a8a;font-weight:600}td{padding:11px 14px;border-bottom:1px solid #f0e8ff;font-size:13px}tr:nth-child(even) td{background:#faf6ff}@media print{body{padding:16px}}</style></head><body>'
-    +'<h2>'+emojiMap[sheet]+' Checklist '+sheet+'</h2><p class="sub">Zultoni Febriansyah &amp; Beska Alfatihah · '+dateStr+'</p>'
-    +'<table><thead><tr><th>#</th><th>Item</th><th style="text-align:center;">Status</th><th style="text-align:right;">Budget</th>'+(sheet==='Seserahan'?'<th style="text-align:center;">Link</th>':'')+'</tr></thead><tbody>'+rows+'</tbody></table>'
-    +'<p style="background:linear-gradient(135deg,#f5f0ff,#ede0f8);border:1px solid #c0a0e0;border-radius:12px;padding:16px 20px;font-size:13px;"><strong>Total Budget '+sheet+':</strong> Rp '+totalBudget.toLocaleString('id-ID')+' &nbsp;|&nbsp; Progress: '+pct+'% ('+totalSudah+'/'+items.length+' selesai)</p>'
-    +'</body></html>');
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Checklist ${sheet}</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>${css}</style></head><body>
+<div class="page-head">
+  <div class="page-head-left">
+    <div class="ttl">${emojiMap[sheet]} Checklist ${sheet}</div>
+    <div class="sub">Wedding Planner</div>
+    <div class="couple">Zultoni Febriansyah &amp; Beska Alfatihah</div>
+  </div>
+  <div class="page-head-right"><div class="date-lbl">Dicetak</div><div class="date-val">${dateStr}</div></div>
+</div>
+<div class="summary-row">
+  <div class="sum-card total"><div class="snum">${items.length}</div><div class="slbl">Total Item</div></div>
+  <div class="sum-card sudah"><div class="snum">${totalSudah}</div><div class="slbl">✓ Sudah</div></div>
+  <div class="sum-card proses"><div class="snum">${totalProses}</div><div class="slbl">⋯ Proses</div></div>
+  <div class="sum-card belum"><div class="snum">${totalBelum}</div><div class="slbl">○ Belum</div></div>
+</div>
+<table><thead><tr><th style="width:36px;text-align:center;">#</th><th>Item</th><th style="text-align:center;width:120px;">Status</th><th style="text-align:right;width:160px;">Budget</th>${linkHeader}</tr></thead><tbody>${rows}</tbody></table>
+<div class="budget-summary">
+  <div class="bs-title">💰 Ringkasan Keuangan ${sheet}</div>
+  <div class="bs-row"><span class="bs-label">Total Item</span><span class="bs-value">${items.length} item</span></div>
+  <div class="bs-row"><span class="bs-label">Item Selesai</span><span class="bs-value">${pct}% selesai</span></div>
+  <div class="bs-row grand"><span class="bs-label">Total Budget ${sheet}</span><span class="bs-value">Rp ${totalBudget.toLocaleString('id-ID')}</span></div>
+  <div class="prog-bar-wrap">
+    <div class="prog-bar-lbl"><span>Progress ${pct}%</span><span>${totalSudah} / ${items.length} selesai</span></div>
+    <div class="prog-bar-track"><div class="prog-bar-fill" style="width:${pct}%"></div></div>
+  </div>
+</div>
+<div class="footer">Wedding Planner · Zultoni Febriansyah &amp; Beska Alfatihah · ${dateStr}</div>
+</body></html>`);
   w.document.close();setTimeout(()=>w.print(),400);
+}
+
+/* PRINT UNDANGAN RSVP — cetak kartu undangan per tamu */
+function printRSVP(){
+  if(!rsvpData||rsvpData.length<=1){showMessage('⚠ Belum ada data RSVP');return;}
+  const dateStr=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  let cards='';
+  for(let i=1;i<rsvpData.length;i++){
+    const name=rsvpData[i][1]||'',guest=parseInt(rsvpData[i][3])||1;
+    cards+=`<div class="inv-card">
+      <div class="inv-ornament">✦ &nbsp; Dengan Hormat &nbsp; ✦</div>
+      <div class="inv-label">Kepada Yth.</div>
+      <div class="inv-name">${esc(name)}</div>
+      <div class="inv-guest">Bersama ${guest} orang tamu</div>
+      <div class="inv-divider">♛</div>
+      <div class="inv-couple">Zultoni Febriansyah &amp; Beska Alfatihah</div>
+      <div class="inv-msg">Mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada acara pernikahan kami.</div>
+      <div class="inv-footer">Kehadiran Anda adalah kebahagiaan kami</div>
+    </div>`;
+  }
+  const css=`*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#fff;padding:20px}
+.page-title{font-family:'Playfair Display',serif;font-size:22px;color:#3d2468;text-align:center;margin-bottom:6px}
+.page-sub{text-align:center;font-size:11px;color:#aaa;margin-bottom:24px;letter-spacing:.06em}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.inv-card{background:linear-gradient(135deg,#fdf6ff 0%,#f5f0ff 40%,#ede8ff 100%);border:1px solid #c0a0e0;border-radius:16px;padding:24px 20px;text-align:center;position:relative;overflow:hidden;page-break-inside:avoid}
+.inv-card::before{content:'';position:absolute;inset:-1px;border-radius:16px;background:linear-gradient(135deg,rgba(201,163,88,.2),transparent 50%,rgba(124,90,170,.1));pointer-events:none}
+.inv-ornament{font-size:9px;letter-spacing:.2em;color:#a07dc8;text-transform:uppercase;margin-bottom:14px;opacity:.8}
+.inv-label{font-size:10px;color:#9b7cc8;text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;font-weight:600}
+.inv-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#3d2468;margin-bottom:4px;line-height:1.2}
+.inv-guest{font-size:10px;color:#a07dc8;margin-bottom:14px;font-weight:500}
+.inv-divider{font-size:20px;color:#c9a358;margin-bottom:10px;filter:drop-shadow(0 0 6px rgba(201,163,88,.4))}
+.inv-couple{font-family:'Playfair Display',serif;font-size:13px;font-weight:600;color:#5b3a8a;margin-bottom:10px;font-style:italic}
+.inv-msg{font-size:10px;color:#7c5aaa;line-height:1.6;margin-bottom:12px}
+.inv-footer{font-size:9px;color:#c9a358;font-style:italic;letter-spacing:.06em}
+@media print{body{padding:10px}.grid{gap:12px}}`;
+  const w=window.open('','_blank');if(!w){showMessage('⚠ Pop-up diblokir browser.');return;}
+  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Undangan Pernikahan</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>${css}</style></head><body>
+<div class="page-title">💌 Undangan Pernikahan</div>
+<div class="page-sub">Zultoni Febriansyah &amp; Beska Alfatihah · Dicetak ${dateStr}</div>
+<div class="grid">${cards}</div>
+</body></html>`);
+  w.document.close();setTimeout(()=>w.print(),500);
 }
 
 /* ═══════════════════════════════════════════
