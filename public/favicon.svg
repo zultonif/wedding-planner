@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Background lingkaran gradien ungu gelap -->
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#2d1b4e"/>
+      <stop offset="100%" stop-color="#0a0612"/>
+    </radialGradient>
+    <radialGradient id="gold" cx="50%" cy="0%" r="100%">
+      <stop offset="0%" stop-color="#e8c97a"/>
+      <stop offset="100%" stop-color="#c9a358"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Lingkaran background -->
+  <circle cx="32" cy="32" r="31" fill="url(#bg)"/>
+
+  <!-- Border lingkaran emas -->
+  <circle cx="32" cy="32" r="30" fill="none" stroke="url(#gold)" stroke-width="1.5"/>
+
+  <!-- Titik hias atas -->
+  <polygon points="32,3 33.2,6.5 32,5.8 30.8,6.5" fill="#c9a358"/>
+
+  <!-- Teks Z & B -->
+  <text x="18" y="38"
+    font-family="Georgia, serif"
+    font-size="20"
+    font-weight="bold"
+    font-style="italic"
+    fill="url(#gold)"
+    letter-spacing="1">Z</text>
+
+  <!-- Ampersand kecil di tengah -->
+  <text x="29.5" y="34"
+    font-family="Georgia, serif"
+    font-size="9"
+    fill="#c9a358"
+    opacity="0.8">&amp;</text>
+
+  <!-- B -->
+  <text x="37" y="38"
+    font-family="Georgia, serif"
+    font-size="20"
+    font-weight="bold"
+    font-style="italic"
+    fill="url(#gold)"
+    letter-spacing="1">B</text>
+
+  <!-- Garis hias bawah -->
+  <line x1="16" y1="44" x2="48" y2="44" stroke="#c9a358" stroke-width="0.8" opacity="0.6"/>
+
+  <!-- Titik hias bawah -->
+  <circle cx="32" cy="49" r="1.5" fill="#c9a358" opacity="0.7"/>
+  <circle cx="25" cy="49" r="1" fill="#c9a358" opacity="0.4"/>
+  <circle cx="39" cy="49" r="1" fill="#c9a358" opacity="0.4"/>
+</svg>
