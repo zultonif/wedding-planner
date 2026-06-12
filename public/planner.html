@@ -934,37 +934,46 @@ tbody tr:last-child td{border-bottom:none}tbody tr:nth-child(even) td{background
 .footer{font-size:10px;color:#bbb;text-align:center;padding-top:14px;border-top:1px solid #ede0f8;letter-spacing:.04em}
 @media print{body{padding:16px}}`;
   const w=window.open('','_blank');if(!w){showMessage('⚠ Pop-up diblokir browser.');return;}
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Checklist ${sheet}</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<style>${css}</style></head><body>
-<div class="page-head">
-  <div class="page-head-left">
-    <div class="ttl">${emojiMap[sheet]} Checklist ${sheet}</div>
-    <div class="sub">Wedding Planner</div>
-    <div class="couple">Zultoni Febriansyah &amp; Beska Alfatihah</div>
-  </div>
-  <div class="page-head-right"><div class="date-lbl">Dicetak</div><div class="date-val">${dateStr}</div></div>
-</div>
-<div class="summary-row">
-  <div class="sum-card total"><div class="snum">${items.length}</div><div class="slbl">Total Item</div></div>
-  <div class="sum-card sudah"><div class="snum">${totalSudah}</div><div class="slbl">✓ Sudah</div></div>
-  <div class="sum-card proses"><div class="snum">${totalProses}</div><div class="slbl">⋯ Proses</div></div>
-  <div class="sum-card belum"><div class="snum">${totalBelum}</div><div class="slbl">○ Belum</div></div>
-</div>
-<table><thead><tr><th style="width:36px;text-align:center;">#</th><th>Item</th><th style="text-align:center;width:120px;">Status</th><th style="text-align:right;width:160px;">Budget</th>${linkHeader}</tr></thead><tbody>${rows}</tbody></table>
-<div class="budget-summary">
-  <div class="bs-title">💰 Ringkasan Keuangan ${sheet}</div>
-  <div class="bs-row"><span class="bs-label">Total Item</span><span class="bs-value">${items.length} item</span></div>
-  <div class="bs-row"><span class="bs-label">Item Selesai</span><span class="bs-value">${pct}% selesai</span></div>
-  <div class="bs-row grand"><span class="bs-label">Total Budget ${sheet}</span><span class="bs-value">Rp ${totalBudget.toLocaleString('id-ID')}</span></div>
-  <div class="prog-bar-wrap">
-    <div class="prog-bar-lbl"><span>Progress ${pct}%</span><span>${totalSudah} / ${items.length} selesai</span></div>
-    <div class="prog-bar-track"><div class="prog-bar-fill" style="width:${pct}%"></div></div>
-  </div>
-</div>
-<div class="footer">Wedding Planner · Zultoni Febriansyah &amp; Beska Alfatihah · ${dateStr}</div>
-</body></html>`);
-  w.document.close();setTimeout(()=>w.print(),400);
+  w.document.open();
+  w.document.write('<!DOCTYPE html>');
+  w.document.write('<html><head><meta charset="utf-8"><title>Checklist '+sheet+'</title>');
+  w.document.write('<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">');
+  w.document.write('<style>'+css+'</style>');
+  w.document.write('</head><body>');
+  w.document.write('<div class="page-head">');
+  w.document.write('  <div class="page-head-left">');
+  w.document.write('    <div class="ttl">'+emojiMap[sheet]+' Checklist '+sheet+'</div>');
+  w.document.write('    <div class="sub">Wedding Planner</div>');
+  w.document.write('    <div class="couple">Zultoni Febriansyah &amp; Beska Alfatihah</div>');
+  w.document.write('  </div>');
+  w.document.write('  <div class="page-head-right"><div class="date-lbl">Dicetak</div><div class="date-val">'+dateStr+'</div></div>');
+  w.document.write('</div>');
+  w.document.write('<div class="summary-row">');
+  w.document.write('  <div class="sum-card total"><div class="snum">'+items.length+'</div><div class="slbl">Total Item</div></div>');
+  w.document.write('  <div class="sum-card sudah"><div class="snum">'+totalSudah+'</div><div class="slbl">&#10003; Sudah</div></div>');
+  w.document.write('  <div class="sum-card proses"><div class="snum">'+totalProses+'</div><div class="slbl">&#8943; Proses</div></div>');
+  w.document.write('  <div class="sum-card belum"><div class="snum">'+totalBelum+'</div><div class="slbl">&#9675; Belum</div></div>');
+  w.document.write('</div>');
+  w.document.write('<table><thead><tr>');
+  w.document.write('<th style="width:36px;text-align:center;">#</th>');
+  w.document.write('<th>Item</th>');
+  w.document.write('<th style="text-align:center;width:120px;">Status</th>');
+  w.document.write('<th style="text-align:right;width:160px;">Budget</th>');
+  w.document.write(linkHeader);
+  w.document.write('</tr></thead><tbody>'+rows+'</tbody></table>');
+  w.document.write('<div class="budget-summary">');
+  w.document.write('  <div class="bs-title">&#128176; Ringkasan Keuangan '+sheet+'</div>');
+  w.document.write('  <div class="bs-row"><span class="bs-label">Total Item</span><span class="bs-value">'+items.length+' item</span></div>');
+  w.document.write('  <div class="bs-row"><span class="bs-label">Item Selesai</span><span class="bs-value">'+pct+'% selesai</span></div>');
+  w.document.write('  <div class="bs-row grand"><span class="bs-label">Total Budget '+sheet+'</span><span class="bs-value">Rp '+totalBudget.toLocaleString('id-ID')+'</span></div>');
+  w.document.write('  <div class="prog-bar-wrap">');
+  w.document.write('    <div class="prog-bar-lbl"><span>Progress '+pct+'%</span><span>'+totalSudah+' / '+items.length+' selesai</span></div>');
+  w.document.write('    <div class="prog-bar-track"><div class="prog-bar-fill" style="width:'+pct+'%"></div></div>');
+  w.document.write('  </div>');
+  w.document.write('</div>');
+  w.document.write('<div class="footer">Wedding Planner &middot; Zultoni Febriansyah &amp; Beska Alfatihah &middot; '+dateStr+'</div>');
+  w.document.write('</body></html>');
+  w.document.close();setTimeout(function(){w.print();},400);
 }
 
 /* PRINT UNDANGAN RSVP — cetak kartu undangan per tamu */
@@ -974,42 +983,49 @@ function printRSVP(){
   let cards='';
   for(let i=1;i<rsvpData.length;i++){
     const name=rsvpData[i][1]||'',guest=parseInt(rsvpData[i][3])||1;
-    cards+=`<div class="inv-card">
-      <div class="inv-ornament">✦ &nbsp; Dengan Hormat &nbsp; ✦</div>
-      <div class="inv-label">Kepada Yth.</div>
-      <div class="inv-name">${esc(name)}</div>
-      <div class="inv-guest">Bersama ${guest} orang tamu</div>
-      <div class="inv-divider">♛</div>
-      <div class="inv-couple">Zultoni Febriansyah &amp; Beska Alfatihah</div>
-      <div class="inv-msg">Mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada acara pernikahan kami.</div>
-      <div class="inv-footer">Kehadiran Anda adalah kebahagiaan kami</div>
-    </div>`;
+    cards+='<div class="inv-card">'
+      +'<div class="inv-ornament">&#10022; &nbsp; Dengan Hormat &nbsp; &#10022;</div>'
+      +'<div class="inv-label">Kepada Yth.</div>'
+      +'<div class="inv-name">'+esc(name)+'</div>'
+      +'<div class="inv-guest">Bersama '+guest+' orang tamu</div>'
+      +'<div class="inv-divider">&#9819;</div>'
+      +'<div class="inv-couple">Zultoni Febriansyah &amp; Beska Alfatihah</div>'
+      +'<div class="inv-msg">Mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada acara pernikahan kami.</div>'
+      +'<div class="inv-footer">Kehadiran Anda adalah kebahagiaan kami</div>'
+      +'</div>';
   }
-  const css=`*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:#fff;padding:20px}
-.page-title{font-family:'Playfair Display',serif;font-size:22px;color:#3d2468;text-align:center;margin-bottom:6px}
-.page-sub{text-align:center;font-size:11px;color:#aaa;margin-bottom:24px;letter-spacing:.06em}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.inv-card{background:linear-gradient(135deg,#fdf6ff 0%,#f5f0ff 40%,#ede8ff 100%);border:1px solid #c0a0e0;border-radius:16px;padding:24px 20px;text-align:center;position:relative;overflow:hidden;page-break-inside:avoid}
-.inv-card::before{content:'';position:absolute;inset:-1px;border-radius:16px;background:linear-gradient(135deg,rgba(201,163,88,.2),transparent 50%,rgba(124,90,170,.1));pointer-events:none}
-.inv-ornament{font-size:9px;letter-spacing:.2em;color:#a07dc8;text-transform:uppercase;margin-bottom:14px;opacity:.8}
-.inv-label{font-size:10px;color:#9b7cc8;text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;font-weight:600}
-.inv-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:#3d2468;margin-bottom:4px;line-height:1.2}
-.inv-guest{font-size:10px;color:#a07dc8;margin-bottom:14px;font-weight:500}
-.inv-divider{font-size:20px;color:#c9a358;margin-bottom:10px;filter:drop-shadow(0 0 6px rgba(201,163,88,.4))}
-.inv-couple{font-family:'Playfair Display',serif;font-size:13px;font-weight:600;color:#5b3a8a;margin-bottom:10px;font-style:italic}
-.inv-msg{font-size:10px;color:#7c5aaa;line-height:1.6;margin-bottom:12px}
-.inv-footer{font-size:9px;color:#c9a358;font-style:italic;letter-spacing:.06em}
-@media print{body{padding:10px}.grid{gap:12px}}`;
-  const w=window.open('','_blank');if(!w){showMessage('⚠ Pop-up diblokir browser.');return;}
-  w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Undangan Pernikahan</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<style>${css}</style></head><body>
-<div class="page-title">💌 Undangan Pernikahan</div>
-<div class="page-sub">Zultoni Febriansyah &amp; Beska Alfatihah · Dicetak ${dateStr}</div>
-<div class="grid">${cards}</div>
-</body></html>`);
-  w.document.close();setTimeout(()=>w.print(),500);
+  const w=window.open('','_blank');
+  if(!w){showMessage('⚠ Pop-up diblokir browser.');return;}
+  // Tulis HTML secara terpisah agar tidak ada konflik parsing
+  w.document.open();
+  w.document.write('<!DOCTYPE html>');
+  w.document.write('<html><head><meta charset="utf-8">');
+  w.document.write('<title>Undangan Pernikahan</title>');
+  w.document.write('<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">');
+  w.document.write('<style>');
+  w.document.write('*{box-sizing:border-box;margin:0;padding:0}');
+  w.document.write('body{font-family:\'DM Sans\',sans-serif;background:#fff;padding:24px}');
+  w.document.write('.page-title{font-family:\'Playfair Display\',serif;font-size:24px;color:#3d2468;text-align:center;margin-bottom:6px;font-weight:700}');
+  w.document.write('.page-sub{text-align:center;font-size:11px;color:#aaa;margin-bottom:28px;letter-spacing:.06em}');
+  w.document.write('.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}');
+  w.document.write('.inv-card{background:linear-gradient(135deg,#fdf6ff 0%,#f5f0ff 40%,#ede8ff 100%);border:1.5px solid #c0a0e0;border-radius:16px;padding:28px 22px;text-align:center;page-break-inside:avoid;position:relative}');
+  w.document.write('.inv-card::after{content:"";position:absolute;inset:4px;border:1px solid rgba(201,163,88,.25);border-radius:13px;pointer-events:none}');
+  w.document.write('.inv-ornament{font-size:9px;letter-spacing:.22em;color:#a07dc8;text-transform:uppercase;margin-bottom:16px;opacity:.85}');
+  w.document.write('.inv-label{font-size:10px;color:#9b7cc8;text-transform:uppercase;letter-spacing:.15em;margin-bottom:8px;font-weight:600}');
+  w.document.write('.inv-name{font-family:\'Playfair Display\',serif;font-size:22px;font-weight:700;color:#3d2468;margin-bottom:4px;line-height:1.25}');
+  w.document.write('.inv-guest{font-size:10px;color:#a07dc8;margin-bottom:18px;font-weight:500;font-style:italic}');
+  w.document.write('.inv-divider{font-size:22px;color:#c9a358;margin-bottom:12px}');
+  w.document.write('.inv-couple{font-family:\'Playfair Display\',serif;font-size:13px;font-weight:600;color:#5b3a8a;margin-bottom:10px;font-style:italic}');
+  w.document.write('.inv-msg{font-size:10px;color:#7c5aaa;line-height:1.7;margin-bottom:14px}');
+  w.document.write('.inv-footer{font-size:9px;color:#c9a358;font-style:italic;letter-spacing:.08em;border-top:1px solid rgba(192,160,224,.4);padding-top:10px;margin-top:4px}');
+  w.document.write('@media print{body{padding:12px}.grid{gap:14px}.inv-card{break-inside:avoid}}');
+  w.document.write('</style></head><body>');
+  w.document.write('<div class="page-title">&#128140; Undangan Pernikahan</div>');
+  w.document.write('<div class="page-sub">Zultoni Febriansyah &amp; Beska Alfatihah &nbsp;&middot;&nbsp; Dicetak '+dateStr+'</div>');
+  w.document.write('<div class="grid">'+cards+'</div>');
+  w.document.write('</body></html>');
+  w.document.close();
+  setTimeout(function(){w.print();},600);
 }
 
 /* ═══════════════════════════════════════════
