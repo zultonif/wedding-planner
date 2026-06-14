@@ -866,7 +866,7 @@ function printRSVP() {
   let cards='';
   for(let i=1;i<rsvpData.length;i++){
     const name=rsvpData[i][1]||'',guest=parseInt(rsvpData[i][3])||1;
-    cards+=`<div class="inv-card"><div class="inv-bsml">&#xFD3F; Bismillahirrahmanirrahim &#xFD3E;</div><div class="inv-top-ornament">&#10022; &nbsp;&nbsp; Dengan Hormat &nbsp;&nbsp; &#10022;</div><div class="inv-label">Kepada Yth.</div><div class="inv-name">${esc(name)}</div><div class="inv-guest">Beserta Keluarga</div><div class="inv-divider">&#9819;</div><div class="inv-couple">Zultoni Febriansyah <em>&amp;</em> Beska Alfatihah</div><div class="inv-msg">Mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada acara pernikahan kami.</div><div class="inv-footer">Kehadiran Anda adalah kebahagiaan kami &#10022;</div></div>`;
+    cards+=`<div class="inv-card"><div class="inv-bsml">&#xFD3F; ﷽ &#xFD3E;</div><div class="inv-top-ornament">&#10022; &nbsp;&nbsp; Dengan Hormat &nbsp;&nbsp; &#10022;</div><div class="inv-label">Kepada Yth.</div><div class="inv-name">${esc(name)}</div><div class="inv-guest">Beserta Keluarga</div><div class="inv-divider">&#9819;</div><div class="inv-couple">Zultoni Febriansyah <em>&amp;</em> Beska Alfatihah</div><div class="inv-msg">Mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada acara pernikahan kami.</div><div class="inv-footer">Kehadiran Anda adalah kebahagiaan kami &#10022;</div></div>`;
   }
   const w=window.open('','_blank');if(!w){showMessage('⚠ Pop-up diblokir browser.');return;}
   w.document.open();
