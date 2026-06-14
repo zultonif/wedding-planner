@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">
+  <defs>
+    <!-- Deep twilight purple background gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#1a0e2e"/>
+      <stop offset="100%" stop-color="#0a0612"/>
+    </radialGradient>
+
+    <!-- Gold shimmer gradient for monogram -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#f5e6a3"/>
+      <stop offset="35%"  stop-color="#d4a853"/>
+      <stop offset="60%"  stop-color="#f0c96a"/>
+      <stop offset="100%" stop-color="#a8782a"/>
+    </linearGradient>
+
+    <!-- Gold shimmer for rings -->
+    <linearGradient id="ringGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#f7eebc"/>
+      <stop offset="50%"  stop-color="#c9922a"/>
+      <stop offset="100%" stop-color="#e8c55a"/>
+    </linearGradient>
+
+    <!-- Soft blush accent -->
+    <linearGradient id="blushGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#e8b4b8" stop-opacity="0"/>
+      <stop offset="50%"  stop-color="#e8b4b8" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#e8b4b8" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Glow filter for monogram -->
+    <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <!-- Subtle drop shadow -->
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#d4a853" flood-opacity="0.4"/>
+    </filter>
+
+    <!-- Clip circle -->
+    <clipPath id="circleClip">
+      <circle cx="256" cy="256" r="230"/>
+    </clipPath>
+  </defs>
+
+  <!-- === BACKGROUND === -->
+  <!-- Outer dark ring -->
+  <circle cx="256" cy="256" r="256" fill="#06030f"/>
+  <!-- Main background circle -->
+  <circle cx="256" cy="256" r="245" fill="url(#bgGrad)"/>
+
+  <!-- Thin double border ring -->
+  <circle cx="256" cy="256" r="237" fill="none" stroke="url(#ringGold)" stroke-width="1.2" opacity="0.5"/>
+  <circle cx="256" cy="256" r="232" fill="none" stroke="url(#ringGold)" stroke-width="0.6" opacity="0.3"/>
+
+  <!-- === DECORATIVE CORNER DIAMONDS at ring === -->
+  <!-- Four small diamond marks at N/S/E/W of inner border -->
+  <g fill="url(#goldGrad)" opacity="0.85">
+    <!-- Top -->
+    <polygon points="256,18 260,25 256,32 252,25"/>
+    <!-- Bottom -->
+    <polygon points="256,480 260,487 256,494 252,487"/>
+    <!-- Left -->
+    <polygon points="18,256 25,252 32,256 25,260"/>
+    <!-- Right -->
+    <polygon points="480,256 487,252 494,256 487,260"/>
+  </g>
+
+  <!-- === INTERLINKED WEDDING RINGS === -->
+  <!-- Left ring (Z) -->
+  <circle cx="230" cy="190" r="36" fill="none" stroke="url(#ringGold)" stroke-width="9" opacity="0.9" filter="url(#softShadow)"/>
+  <!-- Right ring (B) — overlaps left -->
+  <circle cx="282" cy="190" r="36" fill="none" stroke="url(#ringGold)" stroke-width="9" opacity="0.9" filter="url(#softShadow)"/>
+
+  <!-- Small diamond on top of left ring -->
+  <polygon points="230,150 234,157 230,164 226,157" fill="url(#goldGrad)" opacity="0.95"/>
+  <!-- Small diamond on top of right ring -->
+  <polygon points="282,150 286,157 282,164 278,157" fill="url(#goldGrad)" opacity="0.95"/>
+
+  <!-- === MONOGRAM Z & B === -->
+  <!-- "Z" letter - left side -->
+  <text
+    x="191"
+    y="205"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="54"
+    font-style="italic"
+    font-weight="700"
+    fill="url(#goldGrad)"
+    text-anchor="middle"
+    filter="url(#goldGlow)"
+    opacity="0.97"
+  >Z</text>
+
+  <!-- "B" letter - right side -->
+  <text
+    x="320"
+    y="205"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="54"
+    font-style="italic"
+    font-weight="700"
+    fill="url(#goldGrad)"
+    text-anchor="middle"
+    filter="url(#goldGlow)"
+    opacity="0.97"
+  >B</text>
+
+  <!-- Ampersand center small -->
+  <text
+    x="256"
+    y="200"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="22"
+    font-style="italic"
+    fill="#f0c96a"
+    text-anchor="middle"
+    opacity="0.85"
+  >&amp;</text>
+
+  <!-- === DIVIDER LINE with blush bloom === -->
+  <rect x="100" y="242" width="312" height="0.8" fill="url(#blushGrad)"/>
+
+  <!-- Small center diamond on divider -->
+  <polygon points="256,237 260,243 256,249 252,243" fill="#f0c96a" opacity="0.9"/>
+
+  <!-- === MAIN NAMES === -->
+  <!-- "Zultoni Febriansyah" -->
+  <text
+    x="256"
+    y="282"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="21"
+    font-weight="400"
+    fill="#f5e6a3"
+    text-anchor="middle"
+    letter-spacing="2.5"
+    opacity="0.95"
+  >Zultoni Febriansyah</text>
+
+  <!-- Thin hairline between names -->
+  <text
+    x="256"
+    y="305"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="13"
+    fill="#d4a853"
+    text-anchor="middle"
+    letter-spacing="1"
+    opacity="0.75"
+  >✦ &amp; ✦</text>
+
+  <!-- "Beska Alfatihah" -->
+  <text
+    x="256"
+    y="332"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-size="21"
+    font-weight="400"
+    fill="#f5e6a3"
+    text-anchor="middle"
+    letter-spacing="2.5"
+    opacity="0.95"
+  >Beska Alfatihah</text>
+
+  <!-- === SUBTITLE === -->
+  <text
+    x="256"
+    y="375"
+    font-family="'Trebuchet MS', 'Arial Narrow', sans-serif"
+    font-size="11.5"
+    font-weight="400"
+    fill="#c9922a"
+    text-anchor="middle"
+    letter-spacing="5"
+    opacity="0.8"
+  >WEDDING PLANNER</text>
+
+  <!-- === BOTTOM FLORAL ORNAMENT === -->
+  <!-- Left swirl branch -->
+  <path d="M160,398 Q180,385 200,392 Q185,395 178,405 Q170,395 160,398Z" fill="url(#goldGrad)" opacity="0.5"/>
+  <path d="M148,404 Q165,396 175,408 Q162,407 158,418 Q150,408 148,404Z" fill="url(#goldGrad)" opacity="0.35"/>
+
+  <!-- Right swirl branch (mirror) -->
+  <path d="M352,398 Q332,385 312,392 Q327,395 334,405 Q342,395 352,398Z" fill="url(#goldGrad)" opacity="0.5"/>
+  <path d="M364,404 Q347,396 337,408 Q350,407 354,418 Q362,408 364,404Z" fill="url(#goldGrad)" opacity="0.35"/>
+
+  <!-- Center bottom diamond -->
+  <polygon points="256,403 261,410 256,417 251,410" fill="#f0c96a" opacity="0.7"/>
+  <!-- Two flanking dots -->
+  <circle cx="230" cy="410" r="2.5" fill="#d4a853" opacity="0.6"/>
+  <circle cx="282" cy="410" r="2.5" fill="#d4a853" opacity="0.6"/>
+</svg>
