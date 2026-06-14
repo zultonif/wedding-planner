@@ -978,6 +978,43 @@ function saveRundown(){
   gscript.saveRundown(rows).then(()=>{showSync('Rundown tersimpan ✓','success');showMessage('✅ Rundown disimpan ke Sheets');}).catch(()=>{showSync('Tersimpan lokal ✓','success');showMessage('✅ Rundown disimpan lokal');});
 }
 
+  function loadRundownFromSheet() {
+  gscript.getData('Rundown')
+    .then(data => {
+      if (!data || data.length <= 1) {
+        // Tidak ada data di sheet, pakai lokal
+        loadLocalRundown();
+        renderRundown();
+        return;
+      }
+      // Baris pertama = header, lewati
+      const loaded = [];
+      for (let i = 1; i < data.length; i++) {
+        loaded.push({
+          acara: data[i][2] || '',
+          durasi: data[i][3] || '30',
+          pic:   data[i][4] || ''
+        });
+      }
+      if (loaded.length) {
+        rundownData = loaded;
+        // Ambil jam mulai dari baris pertama jika ada
+        if (data[1] && data[1][0] && $('rdStartTime')) {
+          $('rdStartTime').value = data[1][0];
+        }
+        saveLocalRundown(); // cache lokal supaya offline tetap jalan
+      } else {
+        loadLocalRundown();
+      }
+      renderRundown();
+    })
+    .catch(() => {
+      // Gagal, fallback ke lokal
+      loadLocalRundown();
+      renderRundown();
+    });
+}
+
 /* ═══════════════════════════════════════════
    PRINT RUNDOWN — PREMIUM
 ═══════════════════════════════════════════ */
@@ -1130,7 +1167,7 @@ ${premiumPageHeader('&#127978;','Daftar Vendor Pernikahan',dateStr)}
    INIT
 ═══════════════════════════════════════════ */
 window.addEventListener('load', function() {
-  loadLocalRundown();
+  loadRundownFromSheet();
   loadChecklist();
   loadRSVPList();
   loadVendors();
