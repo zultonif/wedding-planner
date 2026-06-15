@@ -5,7 +5,7 @@
 // PATCH  /api/vendor  body:{id,field,value}  → update satu field
 //
 // Sheet "Vendor" kolom (sesuai appendRow yang prepend ID otomatis):
-// A=ID  B=Nama  C=Kategori  D=Deskripsi  E=Phone  F=Harga  G=Alamat  H=Social  I=Status
+// A=ID  B=Nama  C=Kategori  D=Deskripsi  E=Phone  F=Harga  G=Alamat  H=Social  I=Status 
 
 import {
   getSheetsClient,
