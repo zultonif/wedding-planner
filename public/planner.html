@@ -1111,10 +1111,28 @@ function loadVendors(){try{const s=localStorage.getItem('bride_vendors2');if(s)v
 function saveVendorsLocal(){try{localStorage.setItem('bride_vendors2',JSON.stringify(vendorData));}catch(e){}}
 const CATEGORY_EMOJI={'Katering':'🍽️','Fotografer':'📸','Videografer':'🎬','Gedung/Venue':'🏛️','Dekorasi':'🌸','Gaun & Busana':'👗','MC & Entertainment':'🎤','Undangan':'📜','Cincin':'💍','Makeup & Salon':'💄','Transportasi':'🚗','Lainnya':'📦','Wedding Organizer':'🏪'};
 function addVendor(){
-  const name=($('vName').value||'').trim();if(!name){showMessage('⚠ Nama vendor wajib diisi');return;}
-  const vendor={id:Date.now(),name,category:$('vCategory').value||'Lainnya',desc:($('vDesc').value||'').trim(),phone:($('vPhone').value||'').trim(),price:Number($('vPrice').value)||0,address:($('vAddress').value||'').trim(),social:($('vSocial').value||'').trim(),pdfs:[]};
-  vendorData.push(vendor);saveVendorsLocal();$('vName').value=$('vDesc').value=$('vPhone').value=$('vPrice').value=$('vAddress').value=$('vSocial').value='';
-  showMessage('✅ Vendor berhasil disimpan');renderVendors();
+  const name=($('vName').value||'').trim();
+  if(!name){showMessage('⚠ Nama vendor wajib diisi');return;}
+  const vendor={
+    id:Date.now(),name,
+    category:$('vCategory').value||'Lainnya',
+    desc:($('vDesc').value||'').trim(),
+    phone:($('vPhone').value||'').trim(),
+    price:Number($('vPrice').value)||0,
+    address:($('vAddress').value||'').trim(),
+    social:($('vSocial').value||'').trim(),
+    files:[]  // ← ganti pdfs → files (support gambar juga)
+  };
+  vendorData.push(vendor);
+  const saved = saveVendorsLocal(); // ← cek return value
+  if(saved === false){
+    vendorData.pop(); // rollback
+    showMessage('❌ Gagal simpan: storage penuh atau diblokir browser');
+    return;
+  }
+  $('vName').value=$('vDesc').value=$('vPhone').value=$('vPrice').value=$('vAddress').value=$('vSocial').value='';
+  showMessage('✅ Vendor berhasil disimpan');
+  renderVendors();
 }
 function deleteVendor(id){if(!confirm('Hapus vendor ini?'))return;vendorData=vendorData.filter(v=>v.id!==id);saveVendorsLocal();renderVendors();showMessage('🗑 Vendor dihapus');}
 function handleVendorPDFUpload(vendorId,input){
