@@ -1,6 +1,7 @@
 // pages/api/vendor-upload.js
 // POST /api/vendor-upload
 // multipart/form-data: file (PDF/gambar), vendorId
+
 import { v2 as cloudinary } from "cloudinary";
 import { IncomingForm } from "formidable";
 import fs from "fs";
@@ -87,7 +88,12 @@ export default async function handler(req, res) {
     fs.unlink(file.filepath, () => {});
 
     const fileId = uploadResult.public_id;
-    const viewUrl = uploadResult.secure_url;
+
+    // Gambar: URL langsung | PDF: Google Docs Viewer agar bisa dilihat di browser
+    const viewUrl = isImage
+      ? uploadResult.secure_url
+      : `https://docs.google.com/viewer?url=${encodeURIComponent(uploadResult.secure_url)}&embedded=true`;
+
     const downloadUrl = cloudinary.url(fileId, {
       resource_type: isImage ? "image" : "raw",
       flags: "attachment",
