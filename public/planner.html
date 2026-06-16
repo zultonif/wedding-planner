@@ -281,6 +281,35 @@
         animation: none !important;
       }
     }
+
+    /* ═══ OPTIMASI PERFORMA MOBILE ═══ */
+    /* backdrop-filter sangat berat GPU mobile — matikan, ganti solid bg */
+    @media (max-width: 700px) {
+      .card { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+      .topbar { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(17,8,32,.96) !important; }
+      .sync-indicator { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(17,8,32,.96) !important; }
+      #message { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(17,8,32,.96) !important; }
+      /* Noise texture full-screen — berat di mobile */
+      body::before { display: none !important; }
+      /* Hover effects tidak relevan di touch — matikan */
+      .stat-card:hover,.rsvp-dash-card:hover,.budget-box:hover,
+      .vendor-card:hover,.rd-card:hover,.task-item:hover,.rsvp-card:hover {
+        transform: none !important; box-shadow: none !important;
+      }
+      /* Animasi dekoratif header — matikan di mobile */
+      .diamond-accent,.glow-orb,.couple-frame-border,.couple-frame-border-2,.couple-img {
+        animation: none !important;
+      }
+      /* Kurangi shadow kompleks */
+      .card { box-shadow: 0 4px 16px rgba(0,0,0,.3) !important; }
+    }
+    /* will-change hanya untuk elemen animasi aktif */
+    .couple-frame-border, .couple-frame-border-2 { will-change: transform; }
+    .couple-img { will-change: transform; }
+    /* upload progress bar style */
+    .upl-progress { width:100%; height:3px; background:rgba(255,255,255,.1); border-radius:99px; margin-top:6px; overflow:hidden; display:none; }
+    .upl-progress-bar { height:100%; width:0%; background:linear-gradient(90deg,var(--gold),var(--rose)); border-radius:99px; transition:width .3s; }
+    .upl-progress.show { display:block; }
   </style>
 </head>
 
@@ -471,29 +500,43 @@ const api={
 
 /* ═══ CANVAS BG — DIOPTIMASI: pause saat tab tidak aktif, kurangi partikel di mobile ═══ */
 (function(){
-  const cv=document.getElementById('bgCanvas'),ctx=cv.getContext('2d');
-  let W,H,stars=[],orbs=[],running=true,rafId=null;
+  const cv=document.getElementById('bgCanvas');
+  // Di mobile low-end: matikan canvas sepenuhnya untuk hemat baterai & performa
   const isMobile=window.innerWidth<700;
-  function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+  // Gunakan devicePixelRatio capped at 1.5 agar tidak render terlalu besar
+  const DPR=Math.min(window.devicePixelRatio||1, isMobile?1:1.5);
+  if(isMobile){cv.style.display='none';return;}// mobile: canvas off, CSS gradient cukup
+  const ctx=cv.getContext('2d',{alpha:false});// alpha:false = lebih cepat di GPU
+  let W,H,stars=[],orbs=[],running=true,rafId=null,lastFrame=0;
+  const FPS_CAP=30,FRAME_INTERVAL=1000/FPS_CAP;// cap 30fps hemat GPU
+  function resize(){
+    W=cv.width=Math.round(innerWidth*DPR);H=cv.height=Math.round(innerHeight*DPR);
+    cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';
+    ctx.scale(DPR,DPR);
+  }
   function init(){
+    const lw=innerWidth,lh=innerHeight;
     stars=[];
-    const n=isMobile?Math.min(Math.floor(W*H/35000),25):Math.min(Math.floor(W*H/12000),90);
-    for(let i=0;i<n;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.2+.2,a:Math.random()*.22+.04,sp:Math.random()*.004+.001,ph:Math.random()*Math.PI*2,tw:Math.random()>.5});
-    orbs=isMobile?[]:[{x:W*.15,y:H*.2,r:200,c:'rgba(124,90,170,.06)',sp:.0003,ph:0},{x:W*.85,y:H*.7,r:260,c:'rgba(201,163,88,.04)',sp:.0002,ph:1.2},{x:W*.5,y:H*.5,r:180,c:'rgba(212,160,176,.04)',sp:.0004,ph:2.4}];
+    const n=Math.min(Math.floor(lw*lh/18000),60);// max 60 bintang
+    for(let i=0;i<n;i++)stars.push({x:Math.random()*lw,y:Math.random()*lh,r:Math.random()*.9+.2,a:Math.random()*.18+.03,sp:Math.random()*.003+.001,ph:Math.random()*Math.PI*2,tw:Math.random()>.5});
+    orbs=[{x:lw*.15,y:lh*.2,r:180,c:'rgba(124,90,170,.05)',sp:.0003,ph:0},{x:lw*.85,y:lh*.7,r:220,c:'rgba(201,163,88,.035)',sp:.0002,ph:1.2},{x:lw*.5,y:lh*.5,r:160,c:'rgba(212,160,176,.035)',sp:.0004,ph:2.4}];
   }
   function draw(t){
     if(!running)return;
-    ctx.clearRect(0,0,W,H);const now=t*.001;
-    for(const o of orbs){const dx=Math.sin(now*o.sp*500+o.ph)*60,dy=Math.cos(now*o.sp*500+o.ph)*40,g=ctx.createRadialGradient(o.x+dx,o.y+dy,0,o.x+dx,o.y+dy,o.r);g.addColorStop(0,o.c);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.beginPath();ctx.arc(o.x+dx,o.y+dy,o.r,0,Math.PI*2);ctx.fill()}
-    for(const s of stars){const tw=s.tw?s.a*(.5+.5*Math.sin(now*s.sp*60+s.ph)):s.a;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,'+tw.toFixed(3)+')';ctx.fill()}
     rafId=requestAnimationFrame(draw);
+    if(t-lastFrame<FRAME_INTERVAL)return;// throttle fps
+    lastFrame=t;
+    const lw=innerWidth,lh=innerHeight,now=t*.001;
+    ctx.fillStyle='#0a0612';ctx.fillRect(0,0,lw,lh);
+    for(const o of orbs){const dx=Math.sin(now*o.sp*500+o.ph)*50,dy=Math.cos(now*o.sp*500+o.ph)*35,g=ctx.createRadialGradient(o.x+dx,o.y+dy,0,o.x+dx,o.y+dy,o.r);g.addColorStop(0,o.c);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.fillRect(o.x+dx-o.r,o.y+dy-o.r,o.r*2,o.r*2);}
+    for(const s of stars){const tw=s.tw?s.a*(.5+.5*Math.sin(now*s.sp*60+s.ph)):s.a;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,'+tw.toFixed(2)+')';ctx.fill();}
   }
   document.addEventListener('visibilitychange',()=>{
-    if(document.hidden){running=false;if(rafId)cancelAnimationFrame(rafId);}
+    if(document.hidden){running=false;if(rafId)cancelAnimationFrame(rafId),rafId=null;}
     else{running=true;rafId=requestAnimationFrame(draw);}
   });
   let resizeT;
-  addEventListener('resize',()=>{clearTimeout(resizeT);resizeT=setTimeout(()=>{resize();init();},150);});
+  addEventListener('resize',()=>{clearTimeout(resizeT);resizeT=setTimeout(()=>{resize();init();},200);});
   resize();init();rafId=requestAnimationFrame(draw);
 })();
 
@@ -816,16 +859,40 @@ async function uploadFile(vid,input){
 
   const uploadBox=input.closest('.vendor-file-upload');
   const origHTML=uploadBox.innerHTML;
-  uploadBox.innerHTML='<span class="upl-icon">⏳</span><div class="upl-text"><strong>Mengupload...</strong>Mohon tunggu</div>';
+  // Tampilkan progress UI
+  uploadBox.innerHTML='<span class="upl-icon">⏳</span><div class="upl-text"><strong id="uplStatus-'+vid+'">Mengupload...</strong><span id="uplPct-'+vid+'"></span>'
+    +'<div class="upl-progress show" id="uplProg-'+vid+'"><div class="upl-progress-bar" id="uplBar-'+vid+'"></div></div></div>';
+
+  const progBar=$('uplBar-'+vid),progEl=$('uplProg-'+vid),statusEl=$('uplStatus-'+vid),pctEl=$('uplPct-'+vid);
+
+  function setProgress(pct){if(progBar)progBar.style.width=pct+'%';if(pctEl)pctEl.textContent=' '+pct+'%';}
 
   try{
     const formData=new FormData();
     formData.append('file',file);
     formData.append('vendorId',vid);
 
-    const res=await fetch('/api/vendor-upload',{method:'POST',body:formData});
-    const json=await res.json();
-    if(!json.success)throw new Error(json.error||'Upload gagal');
+    // Gunakan XHR agar bisa track progress upload
+    const json=await new Promise((resolve,reject)=>{
+      const xhr=new XMLHttpRequest();
+      xhr.open('POST','/api/vendor-upload');
+      xhr.upload.onprogress=e=>{if(e.lengthComputable)setProgress(Math.round(e.loaded/e.total*80));};
+      xhr.onload=()=>{
+        setProgress(90);
+        let j;
+        try{j=JSON.parse(xhr.responseText);}
+        catch(pe){reject(new Error('Server mengembalikan respons bukan JSON (status '+xhr.status+'). Cek log server.'));return;}
+        if(j.success){resolve(j);}
+        else{reject(new Error(j.error||'Upload gagal'));}
+      };
+      xhr.onerror=()=>reject(new Error('Koneksi gagal saat upload'));
+      xhr.ontimeout=()=>reject(new Error('Upload timeout'));
+      xhr.timeout=60000;
+      xhr.send(formData);
+    });
+
+    setProgress(95);
+    if(statusEl)statusEl.textContent='Menyimpan metadata...';
 
     const fileEntry={
       fileId:json.fileId,name:json.name,mimeType:json.mimeType,size:json.size,
@@ -834,7 +901,9 @@ async function uploadFile(vid,input){
     };
 
     await apicall('/api/vendor','PATCH',{id:vid,field:'addFile',value:fileEntry});
+    setProgress(100);
     showMessage('✅ File tersimpan di Drive — bisa dilihat semua orang');
+    showSync('File diupload ✓','success');
 
     if(!vFiles[vid])vFiles[vid]=[];
     vFiles[vid].push(fileEntry);
@@ -845,7 +914,9 @@ async function uploadFile(vid,input){
       if(card){const d=document.createElement('div');d.innerHTML=buildVendorCard(row);card.replaceWith(d.firstElementChild);}
     }
   }catch(err){
+    console.error('[upload]',err);
     showMessage('❌ Gagal upload: '+err.message);
+    showSync('Gagal ⚠','error');
     uploadBox.innerHTML=origHTML;
   }
   input.value='';
