@@ -109,6 +109,7 @@ export default async function handler(req, res) {
         mimeType: mime,
         body: fs.createReadStream(file.filepath),
       },
+      supportsAllDrives: true,
       fields: "id, name, mimeType, size",
     });
 
@@ -117,6 +118,7 @@ export default async function handler(req, res) {
     await drive.permissions.create({
       fileId,
       requestBody: { role: "reader", type: "anyone" },
+      supportsAllDrives: true,
     });
 
     const isImage = mime.startsWith("image/");
