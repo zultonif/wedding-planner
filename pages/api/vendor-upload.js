@@ -2,43 +2,28 @@
 // POST /api/vendor-upload
 // multipart/form-data: file (PDF/gambar), vendorId
 
-import { google } from "googleapis";
+import { v2 as cloudinary } from "cloudinary";
 import { IncomingForm } from "formidable";
 import fs from "fs";
 
 export const config = {
   api: {
     bodyParser: false,
-    responseLimit: false, // jangan batasi ukuran response
-    sizeLimit: '10mb',    // izinkan request body sampai 10mb di level Next.js
+    responseLimit: false,
+    sizeLimit: "10mb",
   },
 };
 
-const FOLDER_ID = "1xylxO2-hny8hNhCBHuOO5duP6Cqhh6tS";
-
-function getDriveClient() {
-  const credJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
-  if (!credJson) throw new Error("GOOGLE_SERVICE_ACCOUNT_JSON tidak diset");
-  let creds;
-  try {
-    creds = JSON.parse(credJson);
-  } catch (e) {
-    throw new Error("GOOGLE_SERVICE_ACCOUNT_JSON bukan JSON valid: " + e.message);
-  }
-  const auth = new google.auth.GoogleAuth({
-    credentials: creds,
-    scopes: [
-      "https://www.googleapis.com/auth/drive",
-      "https://www.googleapis.com/auth/spreadsheets",
-    ],
-  });
-  return google.drive({ version: "v3", auth });
-}
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key:    process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 function parseForm(req) {
   return new Promise((resolve, reject) => {
     const form = new IncomingForm({
-      maxFileSize: 8 * 1024 * 1024, // 8 MB
+      maxFileSize: 8 * 1024 * 1024,
       keepExtensions: true,
     });
     form.parse(req, (err, fields, files) => {
@@ -60,8 +45,7 @@ export default async function handler(req, res) {
     ({ fields, files } = await parseForm(req));
   } catch (parseErr) {
     console.error("[vendor-upload] parse error:", parseErr);
-    // formidable melempar error kalau file terlalu besar
-    const isTooBig = parseErr.message?.includes('maxFileSize') || parseErr.code === 1009;
+    const isTooBig = parseErr.message?.includes("maxFileSize") || parseErr.code === 1009;
     return res.status(413).json({
       success: false,
       error: isTooBig
@@ -91,60 +75,42 @@ export default async function handler(req, res) {
     });
   }
 
-  let drive;
   try {
-    drive = getDriveClient();
-  } catch (credErr) {
-    return res.status(500).json({ success: false, error: credErr.message });
-  }
-
-  try {
-    const uploaded = await drive.files.create({
-      requestBody: {
-        name: file.originalFilename || file.newFilename || "upload",
-        parents: [FOLDER_ID] ,
-        mimeType: mime,
-      },
-      media: {
-        mimeType: mime,
-        body: fs.createReadStream(file.filepath),
-      },
-      supportsAllDrives: true,
-      fields: "id, name, mimeType, size",
-    });
-
-    const fileId = uploaded.data.id;
-
-    await drive.permissions.create({
-      fileId,
-      requestBody: { role: "reader", type: "anyone" },
-      supportsAllDrives: true,
-    });
-
     const isImage = mime.startsWith("image/");
-    const viewUrl = isImage
-      ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`
-      : `https://drive.google.com/file/d/${fileId}/preview`;
-    const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+
+    const uploadResult = await cloudinary.uploader.upload(file.filepath, {
+      folder: "wedding-planner/vendor",
+      resource_type: isImage ? "image" : "raw",
+      use_filename: true,
+      unique_filename: true,
+    });
 
     fs.unlink(file.filepath, () => {});
+
+    const fileId = uploadResult.public_id;
+    const viewUrl = uploadResult.secure_url;
+    const downloadUrl = cloudinary.url(fileId, {
+      resource_type: isImage ? "image" : "raw",
+      flags: "attachment",
+      secure: true,
+    });
 
     return res.status(200).json({
       success: true,
       fileId,
-      name: uploaded.data.name,
+      name: file.originalFilename || file.newFilename || "upload",
       mimeType: mime,
       size: file.size,
       viewUrl,
       downloadUrl,
       isImage,
     });
-  } catch (driveErr) {
-    console.error("[vendor-upload] drive error:", driveErr);
+  } catch (uploadErr) {
+    console.error("[vendor-upload] cloudinary error:", uploadErr);
     try { fs.unlink(file.filepath, () => {}); } catch (_) {}
     return res.status(500).json({
       success: false,
-      error: "Gagal upload ke Drive: " + driveErr.message,
+      error: "Gagal upload ke Cloudinary: " + uploadErr.message,
     });
   }
 }
