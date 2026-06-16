@@ -10,6 +10,7 @@
   "dependencies": {
     "next": "14.2.3",
     "googleapis": "^140.0.1",
-    "formidable": "^3.5.1"
+    "formidable": "^3.5.1",
+    "cloudinary": "^2.5.1"
   }
 }
