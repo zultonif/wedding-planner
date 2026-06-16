@@ -1,13 +1,18 @@
 // pages/api/vendor-upload.js
 // POST /api/vendor-upload
 // multipart/form-data: file (PDF/gambar), vendorId
-// Upload file ke Google Drive, return fileId + viewUrl
 
 import { google } from "googleapis";
 import { IncomingForm } from "formidable";
 import fs from "fs";
 
-export const config = { api: { bodyParser: false } };
+export const config = {
+  api: {
+    bodyParser: false,
+    responseLimit: false, // jangan batasi ukuran response
+    sizeLimit: '10mb',    // izinkan request body sampai 10mb di level Next.js
+  },
+};
 
 const FOLDER_ID = "1tOLyM_4iURANXU7NJO2L9N6up0h8INHu";
 
@@ -44,7 +49,6 @@ function parseForm(req) {
 }
 
 export default async function handler(req, res) {
-  // Always set JSON content-type so client never gets "unexpected input"
   res.setHeader("Content-Type", "application/json");
 
   if (req.method !== "POST") {
@@ -56,13 +60,16 @@ export default async function handler(req, res) {
     ({ fields, files } = await parseForm(req));
   } catch (parseErr) {
     console.error("[vendor-upload] parse error:", parseErr);
-    return res.status(400).json({
+    // formidable melempar error kalau file terlalu besar
+    const isTooBig = parseErr.message?.includes('maxFileSize') || parseErr.code === 1009;
+    return res.status(413).json({
       success: false,
-      error: "Gagal membaca file upload: " + parseErr.message,
+      error: isTooBig
+        ? "File terlalu besar. Maksimal 8 MB."
+        : "Gagal membaca file upload: " + parseErr.message,
     });
   }
 
-  // formidable v3 kadang returns array
   const file = Array.isArray(files.file) ? files.file[0] : files.file;
   if (!file) {
     return res.status(400).json({ success: false, error: "File wajib disertakan" });
@@ -92,7 +99,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Upload ke Google Drive
     const uploaded = await drive.files.create({
       requestBody: {
         name: file.originalFilename || file.newFilename || "upload",
@@ -108,7 +114,6 @@ export default async function handler(req, res) {
 
     const fileId = uploaded.data.id;
 
-    // Set permission publik
     await drive.permissions.create({
       fileId,
       requestBody: { role: "reader", type: "anyone" },
@@ -120,7 +125,6 @@ export default async function handler(req, res) {
       : `https://drive.google.com/file/d/${fileId}/preview`;
     const downloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
 
-    // Hapus file temp
     fs.unlink(file.filepath, () => {});
 
     return res.status(200).json({
@@ -135,7 +139,6 @@ export default async function handler(req, res) {
     });
   } catch (driveErr) {
     console.error("[vendor-upload] drive error:", driveErr);
-    // Cleanup temp file if still exists
     try { fs.unlink(file.filepath, () => {}); } catch (_) {}
     return res.status(500).json({
       success: false,
