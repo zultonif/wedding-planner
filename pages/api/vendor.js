@@ -14,6 +14,9 @@ import {
   deleteRowById,
 } from "../../lib/sheets";
 
+// Pastikan bodyParser aktif untuk metode POST/DELETE/PATCH yang pakai JSON
+export const config = { api: { bodyParser: true } };
+
 const SHEET = "Vendor";
 
 const COL = {
@@ -28,7 +31,17 @@ const COL = {
   files:    10, // J — JSON array of {fileId,name,mimeType,viewUrl,downloadUrl}
 };
 
+// Helper: pastikan kolom Files selalu array
+function parseFiles(raw) {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw;
+  try { return JSON.parse(raw); } catch { return []; }
+}
+
 export default async function handler(req, res) {
+  // Selalu set header JSON supaya client tidak pernah dapat "unexpected input"
+  res.setHeader("Content-Type", "application/json");
+
   try {
 
     // ── GET ──────────────────────────────────────────────────────────────
@@ -37,19 +50,16 @@ export default async function handler(req, res) {
       for (let i = 1; i < data.length; i++) {
         if (data[i][0] !== undefined) data[i][0] = String(data[i][0]);
         // Parse kolom Files dari JSON string
-        if (data[i][9]) {
-          try { data[i][9] = JSON.parse(data[i][9]); } catch { data[i][9] = []; }
-        } else {
-          data[i][9] = [];
-        }
+        data[i][9] = parseFiles(data[i][9]);
       }
       return res.status(200).json({ success: true, data });
     }
 
     // ── POST: tambah vendor ───────────────────────────────────────────────
     if (req.method === "POST") {
-      const { nama, kategori, desc, phone, harga, address, social } = req.body;
-      if (!nama) return res.status(400).json({ error: "Nama vendor wajib diisi" });
+      const body = req.body || {};
+      const { nama, kategori, desc, phone, harga, address, social } = body;
+      if (!nama) return res.status(400).json({ success: false, error: "Nama vendor wajib diisi" });
       const id = await appendRow(SHEET, [
         nama,
         kategori || "Lainnya",
@@ -66,51 +76,46 @@ export default async function handler(req, res) {
 
     // ── DELETE: hapus vendor ──────────────────────────────────────────────
     if (req.method === "DELETE") {
-      const { id } = req.body;
-      if (!id) return res.status(400).json({ error: "ID wajib diisi" });
+      const body = req.body || {};
+      const { id } = body;
+      if (!id) return res.status(400).json({ success: false, error: "ID wajib diisi" });
       const ok = await deleteRowById(SHEET, id);
-      return res.status(200).json({ success: ok });
+      return res.status(200).json({ success: !!ok });
     }
 
     // ── PATCH: update field atau tambah/hapus file ────────────────────────
     if (req.method === "PATCH") {
-      const { id, field, value } = req.body;
-      if (!id || !field) return res.status(400).json({ error: "ID dan field wajib diisi" });
+      const body = req.body || {};
+      const { id, field, value } = body;
+      if (!id || !field) return res.status(400).json({ success: false, error: "ID dan field wajib diisi" });
 
       if (field === "addFile") {
         // value = {fileId, name, mimeType, viewUrl, downloadUrl, size}
-        // Baca files yang ada dulu
         const data = await getData(SHEET);
         const row = data.find(r => String(r[0]) === String(id));
-        let files = [];
-        if (row && row[9]) {
-          try { files = typeof row[9] === 'string' ? JSON.parse(row[9]) : row[9]; } catch { files = []; }
-        }
+        const files = parseFiles(row && row[9]);
         files.push(value);
         const ok = await updateCell(SHEET, id, COL.files, JSON.stringify(files));
-        return res.status(200).json({ success: ok, files });
+        return res.status(200).json({ success: !!ok, files });
       }
 
       if (field === "removeFile") {
         // value = fileId yang dihapus
         const data = await getData(SHEET);
         const row = data.find(r => String(r[0]) === String(id));
-        let files = [];
-        if (row && row[9]) {
-          try { files = typeof row[9] === 'string' ? JSON.parse(row[9]) : row[9]; } catch { files = []; }
-        }
+        let files = parseFiles(row && row[9]);
         files = files.filter(f => f.fileId !== value);
         const ok = await updateCell(SHEET, id, COL.files, JSON.stringify(files));
-        return res.status(200).json({ success: ok, files });
+        return res.status(200).json({ success: !!ok, files });
       }
 
       const colIndex = COL[field];
-      if (!colIndex) return res.status(400).json({ error: "Field tidak valid: " + field });
+      if (!colIndex) return res.status(400).json({ success: false, error: "Field tidak valid: " + field });
       const ok = await updateCell(SHEET, id, colIndex, value ?? "");
-      return res.status(200).json({ success: ok });
+      return res.status(200).json({ success: !!ok });
     }
 
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({ success: false, error: "Method not allowed" });
 
   } catch (err) {
     console.error("[vendor]", err);
