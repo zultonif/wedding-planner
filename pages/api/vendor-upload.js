@@ -14,7 +14,7 @@ export const config = {
   },
 };
 
-const FOLDER_ID = "1tOLyM_4iURANXU7NJO2L9N6up0h8INHu";
+const FOLDER_ID = "1xylxO2-hny8hNhCBHuOO5duP6Cqhh6tS";
 
 function getDriveClient() {
   const credJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
