@@ -37,7 +37,7 @@ export default async function handler(req, res) {
 
   try {
     const drive = getDriveClient();
-    await drive.files.delete({ fileId });
+    await drive.files.delete({ fileId, supportsAllDrives: true, }), ;
     return res.status(200).json({ success: true });
   } catch (err) {
     console.error("[vendor-file-delete]", err);
