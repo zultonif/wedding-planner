@@ -1,7 +1,6 @@
 // pages/api/vendor-upload.js
 // POST /api/vendor-upload
 // multipart/form-data: file (PDF/gambar), vendorId
-
 import { v2 as cloudinary } from "cloudinary";
 import { IncomingForm } from "formidable";
 import fs from "fs";
