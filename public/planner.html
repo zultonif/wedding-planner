@@ -235,6 +235,12 @@
     .lightbox img{max-width:92vw;max-height:92vh;object-fit:contain;border-radius:8px}
     .lb-close{position:absolute;top:18px;right:22px;color:#fff;font-size:34px;cursor:pointer;opacity:.7;line-height:1;transition:opacity .15s}
     .lb-close:hover{opacity:1}
+    /* pdf viewer modal */
+    .pdf-modal{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);align-items:center;justify-content:center;flex-direction:column}
+    .pdf-modal.open{display:flex}
+    .pdf-modal iframe{width:92vw;height:88vh;border:none;border-radius:8px;background:#fff}
+    .pdf-modal-close{position:absolute;top:18px;right:22px;color:#fff;font-size:34px;cursor:pointer;opacity:.7;line-height:1;transition:opacity .15s}
+    .pdf-modal-close:hover{opacity:1}
     .empty{text-align:center;padding:36px 16px;color:var(--text-muted);font-size:13px}
     .empty .ei{font-size:32px;display:block;margin-bottom:10px;opacity:.3}
     .error{color:var(--danger);font-size:13px}
@@ -319,6 +325,10 @@
 <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
   <span class="lb-close" onclick="closeLightbox()">✕</span>
   <img id="lbImg" src="" alt="">
+</div>
+<div class="pdf-modal" id="pdfModal">
+  <span class="pdf-modal-close" onclick="closePdfModal()">✕</span>
+  <iframe id="pdfFrame" src="" allowfullscreen></iframe>
 </div>
 <div class="sync-indicator" id="syncIndicator"><div class="sync-dot"></div><span id="syncText">Menyinkronkan...</span></div>
 <div class="view-toggle">
@@ -931,12 +941,19 @@ function openLB(vid,fid){
 function closeLightbox(e){if(!e||e.target===e.currentTarget||e.target.classList.contains('lb-close')){$('lightbox').classList.remove('open');$('lbImg').src='';}}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')$('lightbox').classList.remove('open');});
 
-/* ── OPEN / DOWNLOAD / DELETE FILE (Drive) ── */
+/* ── OPEN / DOWNLOAD / DELETE FILE ── */
 function openFile(vid,fid){
   const f=(vFiles[String(vid)]||[]).find(f=>f.fileId===String(fid));if(!f){showMessage('❌ Data tidak ditemukan');return;}
   if(f.isImage){openLB(vid,fid);return;}
-  window.open(f.viewUrl,'_blank');
+  /* PDF: tampilkan di modal iframe pakai Google Docs Viewer */
+  $('pdfFrame').src=f.viewUrl;
+  $('pdfModal').classList.add('open');
 }
+function closePdfModal(){
+  $('pdfModal').classList.remove('open');
+  $('pdfFrame').src='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('pdfModal').classList.remove('open');$('pdfFrame').src='';}});
 function dlFile(vid,fid){
   const f=(vFiles[String(vid)]||[]).find(f=>f.fileId===String(fid));if(!f){showMessage('❌ Data tidak ditemukan');return;}
   window.open(f.downloadUrl,'_blank');
