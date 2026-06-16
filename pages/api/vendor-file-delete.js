@@ -1,7 +1,6 @@
 // pages/api/vendor-file-delete.js
 // DELETE /api/vendor-file-delete
 // Body: { fileId, mimeType }
-
 import { v2 as cloudinary } from "cloudinary";
 
 export const config = { api: { bodyParser: true } };
