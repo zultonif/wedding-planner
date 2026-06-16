@@ -102,7 +102,7 @@ export default async function handler(req, res) {
     const uploaded = await drive.files.create({
       requestBody: {
         name: file.originalFilename || file.newFilename || "upload",
-        parents: 1xylxO2-hny8hNhCBHuOO5duP6Cqhh6tS,
+        parents: [FOLDER_ID] ,
         mimeType: mime,
       },
       media: {
