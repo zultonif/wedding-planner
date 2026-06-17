@@ -238,7 +238,7 @@
     /* pdf viewer modal */
     .pdf-modal{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.92);align-items:center;justify-content:center;flex-direction:column}
     .pdf-modal.open{display:flex}
-    .pdf-modal iframe{width:92vw;height:88vh;border:none;border-radius:8px;background:#fff}
+    .pdf-modal embed{width:92vw;height:88vh;border:none;border-radius:8px;background:#fff}
     .pdf-modal-close{position:absolute;top:18px;right:22px;color:#fff;font-size:34px;cursor:pointer;opacity:.7;line-height:1;transition:opacity .15s}
     .pdf-modal-close:hover{opacity:1}
     .empty{text-align:center;padding:36px 16px;color:var(--text-muted);font-size:13px}
@@ -328,7 +328,7 @@
 </div>
 <div class="pdf-modal" id="pdfModal">
   <span class="pdf-modal-close" onclick="closePdfModal()">✕</span>
-  <iframe id="pdfFrame" src="" allowfullscreen></iframe>
+  <embed id="pdfFrame" type="application/pdf" src="" style="width:92vw;height:88vh;border:none;border-radius:8px;background:#fff">
 </div>
 <div class="sync-indicator" id="syncIndicator"><div class="sync-dot"></div><span id="syncText">Menyinkronkan...</span></div>
 <div class="view-toggle">
@@ -945,7 +945,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')$('lightbox').classL
 function openFile(vid,fid){
   const f=(vFiles[String(vid)]||[]).find(f=>f.fileId===String(fid));if(!f){showMessage('❌ Data tidak ditemukan');return;}
   if(f.isImage){openLB(vid,fid);return;}
-  /* PDF: tampilkan di modal iframe pakai Google Docs Viewer */
+  /* PDF: buka langsung dengan fl_inline dari Cloudinary */
   $('pdfFrame').src=f.viewUrl;
   $('pdfModal').classList.add('open');
 }
