@@ -1,7 +1,4 @@
 // pages/api/vendor-upload.js
-// POST /api/vendor-upload
-// multipart/form-data: file (PDF/gambar), vendorId
-
 import { v2 as cloudinary } from "cloudinary";
 import { IncomingForm } from "formidable";
 import fs from "fs";
@@ -22,10 +19,7 @@ cloudinary.config({
 
 function parseForm(req) {
   return new Promise((resolve, reject) => {
-    const form = new IncomingForm({
-      maxFileSize: 8 * 1024 * 1024,
-      keepExtensions: true,
-    });
+    const form = new IncomingForm({ maxFileSize: 8 * 1024 * 1024, keepExtensions: true });
     form.parse(req, (err, fields, files) => {
       if (err) return reject(err);
       resolve({ fields, files });
@@ -44,35 +38,21 @@ export default async function handler(req, res) {
   try {
     ({ fields, files } = await parseForm(req));
   } catch (parseErr) {
-    console.error("[vendor-upload] parse error:", parseErr);
     const isTooBig = parseErr.message?.includes("maxFileSize") || parseErr.code === 1009;
     return res.status(413).json({
       success: false,
-      error: isTooBig
-        ? "File terlalu besar. Maksimal 8 MB."
-        : "Gagal membaca file upload: " + parseErr.message,
+      error: isTooBig ? "File terlalu besar. Maksimal 8 MB." : "Gagal membaca file: " + parseErr.message,
     });
   }
 
   const file = Array.isArray(files.file) ? files.file[0] : files.file;
-  if (!file) {
-    return res.status(400).json({ success: false, error: "File wajib disertakan" });
-  }
+  if (!file) return res.status(400).json({ success: false, error: "File wajib disertakan" });
 
-  const allowedTypes = [
-    "application/pdf",
-    "image/jpeg",
-    "image/png",
-    "image/webp",
-    "image/gif",
-  ];
+  const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp", "image/gif"];
   const mime = file.mimetype || file.type || "";
   if (!allowedTypes.includes(mime)) {
     fs.unlink(file.filepath, () => {});
-    return res.status(400).json({
-      success: false,
-      error: "Tipe file tidak didukung: " + mime,
-    });
+    return res.status(400).json({ success: false, error: "Tipe file tidak didukung: " + mime });
   }
 
   try {
@@ -80,28 +60,18 @@ export default async function handler(req, res) {
 
     const uploadResult = await cloudinary.uploader.upload(file.filepath, {
       folder: "wedding-planner/vendor",
-      resource_type: isImage ? "image" : "raw",
+      resource_type: "auto",   // auto: Cloudinary set Content-Type yang benar untuk PDF maupun gambar
       use_filename: true,
       unique_filename: true,
     });
 
     fs.unlink(file.filepath, () => {});
 
-    const fileId = uploadResult.public_id;
-
-    // Gambar: URL langsung
-    // PDF: fl_inline supaya browser render PDF, bukan download
-    const viewUrl = isImage
-      ? uploadResult.secure_url
-      : cloudinary.url(fileId, {
-          resource_type: "raw",
-          flags: "inline",
-          secure: true,
-        });
-
-    // URL download (force download)
+    const fileId     = uploadResult.public_id;
+    const resType    = uploadResult.resource_type; // "image" atau "raw"
+    const viewUrl    = uploadResult.secure_url;    // buka di tab baru, browser render sendiri
     const downloadUrl = cloudinary.url(fileId, {
-      resource_type: isImage ? "image" : "raw",
+      resource_type: resType,
       flags: "attachment",
       secure: true,
     });
