@@ -1,6 +1,7 @@
 // pages/api/vendor-file-delete.js
 // DELETE /api/vendor-file-delete
 // Body: { fileId, mimeType }
+
 import { v2 as cloudinary } from "cloudinary";
 
 export const config = { api: { bodyParser: true } };
@@ -24,10 +25,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const isImage = mimeType ? mimeType.startsWith("image/") : true;
-    const resourceType = isImage ? "image" : "raw";
-
-    await cloudinary.uploader.destroy(fileId, { resource_type: resourceType });
+    // Coba hapus sebagai image dulu, kalau gagal coba raw (PDF)
+    let destroyed = false;
+    for (const rt of ["image", "raw", "video"]) {
+      const result = await cloudinary.uploader.destroy(fileId, { resource_type: rt });
+      if (result.result === "ok") { destroyed = true; break; }
+    }
     return res.status(200).json({ success: true });
   } catch (err) {
     console.error("[vendor-file-delete]", err);
