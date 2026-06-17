@@ -58,20 +58,32 @@ export default async function handler(req, res) {
   try {
     const isImage = mime.startsWith("image/");
 
+    // Gambar pakai resource_type "image", PDF pakai "raw"
+    const resourceType = isImage ? "image" : "raw";
+
     const uploadResult = await cloudinary.uploader.upload(file.filepath, {
       folder: "wedding-planner/vendor",
-      resource_type: "auto",   // auto: Cloudinary set Content-Type yang benar untuk PDF maupun gambar
+      resource_type: resourceType,
       use_filename: true,
       unique_filename: true,
+      // Untuk PDF: paksa Content-Type application/pdf agar browser bisa buka
+      ...(isImage ? {} : { format: "pdf" }),
     });
 
     fs.unlink(file.filepath, () => {});
 
-    const fileId     = uploadResult.public_id;
-    const resType    = uploadResult.resource_type; // "image" atau "raw"
-    const viewUrl    = uploadResult.secure_url;    // buka di tab baru, browser render sendiri
+    const fileId = uploadResult.public_id;
+
+    let viewUrl;
+    if (isImage) {
+      viewUrl = uploadResult.secure_url;
+    } else {
+      // URL raw PDF dengan .pdf extension eksplisit — browser buka sebagai PDF
+      viewUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/raw/upload/${fileId}.pdf`;
+    }
+
     const downloadUrl = cloudinary.url(fileId, {
-      resource_type: resType,
+      resource_type: resourceType,
       flags: "attachment",
       secure: true,
     });
@@ -79,7 +91,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       fileId,
-      resourceType: resType,
+      resourceType,
       name: file.originalFilename || file.newFilename || "upload",
       mimeType: mime,
       size: file.size,
