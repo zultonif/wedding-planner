@@ -109,6 +109,7 @@ export default async function handler(req, res) {
     return res.status(200).json({
       success: true,
       fileId,
+      resourceType: resType,
       name: file.originalFilename || file.newFilename || "upload",
       mimeType: mime,
       size: file.size,
