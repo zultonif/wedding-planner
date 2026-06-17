@@ -89,11 +89,17 @@ export default async function handler(req, res) {
 
     const fileId = uploadResult.public_id;
 
-    // Gambar: URL langsung | PDF: Google Docs Viewer agar bisa dilihat di browser
+    // Gambar: URL langsung
+    // PDF: fl_inline supaya browser render PDF, bukan download
     const viewUrl = isImage
       ? uploadResult.secure_url
-      : `https://docs.google.com/viewer?url=${encodeURIComponent(uploadResult.secure_url)}&embedded=true`;
+      : cloudinary.url(fileId, {
+          resource_type: "raw",
+          flags: "inline",
+          secure: true,
+        });
 
+    // URL download (force download)
     const downloadUrl = cloudinary.url(fileId, {
       resource_type: isImage ? "image" : "raw",
       flags: "attachment",
