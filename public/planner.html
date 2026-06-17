@@ -578,7 +578,9 @@ function showSection(k){
   const t=$(SECS[k]);if(t)t.classList.add('active');
   const n=$('nav-'+k);if(n)n.classList.add('nav-active');
   if(k==='rundown')renderRundown();
+  try{localStorage.setItem('bride_last_section',k)}catch(e){}
 }
+(function(){try{const s=localStorage.getItem('bride_last_section');if(s&&SECS[s])showSection(s)}catch(e){}})();
 let msgT;
 function showMessage(txt){const m=$('message');m.textContent=txt;m.style.display='block';clearTimeout(msgT);msgT=setTimeout(()=>{m.style.display='none'},3200);}
 function updateBudget(){
