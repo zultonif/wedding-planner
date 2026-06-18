@@ -311,27 +311,6 @@
     .upl-progress { width:100%; height:3px; background:rgba(255,255,255,.1); border-radius:99px; margin-top:6px; overflow:hidden; display:none; }
     .upl-progress-bar { height:100%; width:0%; background:linear-gradient(90deg,var(--gold),var(--rose)); border-radius:99px; transition:width .3s; }
     .upl-progress.show { display:block; }
-
-    /* WO Comparison */
-    .wo-table{width:100%;border-collapse:collapse;font-size:13px;}
-    .wo-table th{padding:10px 14px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--gold-l);border-bottom:2px solid var(--violet);background:linear-gradient(135deg,#1b0d38,#2e1250);white-space:nowrap;}
-    .wo-table th.row-label{color:var(--text-muted);background:linear-gradient(135deg,#110820,#1b0d38);min-width:155px;position:sticky;left:0;z-index:3;}
-    .wo-table th.wo-head{min-width:160px;text-align:center;}
-    .wo-table td{border-bottom:1px solid rgba(124,90,170,.15);padding:0;vertical-align:middle;}
-    .wo-table td.row-label{padding:9px 14px;font-size:12px;font-weight:600;color:var(--gold-l);background:rgba(17,8,32,.9);white-space:nowrap;position:sticky;left:0;z-index:1;}
-    .wo-table tr:nth-child(even) td.row-label{background:rgba(27,13,56,.9);}
-    .wo-table tr:hover td{background:rgba(124,90,170,.07);}
-    .wo-table tr:hover td.row-label{background:rgba(27,13,56,.97);}
-    .wo-table tr.wo-tr-total td{border-top:2px solid var(--border-gold);background:rgba(201,163,88,.05);}
-    .wo-inp{width:100%;padding:9px 12px;background:transparent;border:none;color:var(--text);font-size:13px;font-family:inherit;cursor:pointer;}
-    .wo-inp:focus{outline:none;background:rgba(124,90,170,.18);}
-    .wo-inp::placeholder{color:var(--text-muted);font-style:italic;font-size:12px;}
-    .wo-inp.price{color:var(--ok);font-weight:600;text-align:right;}
-    .wo-inp.total{color:var(--gold-l);font-weight:700;font-size:14px;text-align:center;cursor:default;background:transparent!important;}
-    .wo-inp.best{background:rgba(92,191,138,.1)!important;}
-    .wo-inp.worst{background:rgba(224,92,122,.07)!important;}
-    .wo-del-col{cursor:pointer;opacity:.35;font-size:11px;margin-left:5px;display:inline-block;transition:opacity .15s;vertical-align:middle;}
-    .wo-del-col:hover{opacity:1;color:var(--danger);}
   </style>
 </head>
 
@@ -373,7 +352,6 @@
     <button onclick="showSection('rundown')" id="nav-rundown">🗓️ Rundown</button>
     <button onclick="showSection('rsvp')" id="nav-rsvp">💌 RSVP</button>
     <button onclick="showSection('vendor')" id="nav-vendor">🏪 Vendor</button>
-    <button onclick="showSection('wo')" id="nav-wo">⚖️ Banding WO</button>
   </div>
   <div id="message"></div>
   <!-- DASHBOARD -->
@@ -494,24 +472,8 @@
       </div>
       <hr class="rsvp-divider">
       <div id="vendorList"><div class="empty"><span class="ei">🏪</span>Memuat data vendor...</div></div>
-  </div>
-
-  <!-- WO COMPARISON SECTION -->
-  <div id="woSection" class="section">
-    <div class="card">
-      <div class="card-title"><span class="ct-icon">⚖️</span>Perbandingan Wedding Organizer</div>
-      <p class="edit-hint" style="margin-bottom:16px;">✅ Data tersimpan di Google Sheets — bisa dilihat semua orang</p>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
-        <input class="add-input" id="woNewName" placeholder="Nama WO / Paket baru..." style="margin:0;flex:1;min-width:180px;">
-        <button class="btn btn-gold" onclick="woAdd()">＋ Tambah WO</button>
-        <button class="btn btn-ghost btn-sm" onclick="woPrint()">🖨️ Cetak</button>
-      </div>
-      <div style="overflow-x:auto;">
-        <div id="woTableWrap"><div class="empty"><span class="ei">⚖️</span>Memuat data...</div></div>
-      </div>
     </div>
   </div>
-
 </div>
 <script>
 /* ═══ API BRIDGE ═══ */
@@ -609,14 +571,13 @@ function setView(m){
   try{localStorage.setItem('bride_view',m)}catch(e){}
 }
 (function(){try{const v=localStorage.getItem('bride_view');if(v==='mobile')setView('mobile')}catch(e){}})();
-const SECS={dashboard:'dashboard',lamaran:'lamaranSection',pernikahan:'pernikahanSection',seserahan:'seserahanSection',rundown:'rundownSection',rsvp:'rsvpSection',vendor:'vendorSection',wo:'woSection'};
+const SECS={dashboard:'dashboard',lamaran:'lamaranSection',pernikahan:'pernikahanSection',seserahan:'seserahanSection',rundown:'rundownSection',rsvp:'rsvpSection',vendor:'vendorSection'};
 function showSection(k){
   Object.values(SECS).forEach(id=>{const el=$(id);if(el)el.classList.remove('active')});
   Object.keys(SECS).forEach(k2=>{const el=$('nav-'+k2);if(el)el.classList.remove('nav-active')});
   const t=$(SECS[k]);if(t)t.classList.add('active');
   const n=$('nav-'+k);if(n)n.classList.add('nav-active');
   if(k==='rundown')renderRundown();
-  if(k==='wo'&&!woData.length)woLoad();
   try{localStorage.setItem('bride_last_section',k)}catch(e){}
 }
 (function(){try{const s=localStorage.getItem('bride_last_section');if(s&&SECS[s])showSection(s)}catch(e){}})();
@@ -1228,166 +1189,6 @@ function deleteRSVP(id){
 function fmtPhone(p){if(!p)return '-';let n=String(p).replace(/[^0-9]/g,'');if(!n)return '-';if(n.startsWith('0'))n='62'+n.slice(1);else if(n.startsWith('8'))n='62'+n;return '+'+n.slice(0,2)+' '+n.slice(2,5)+'-'+n.slice(5,9)+'-'+n.slice(9);}
 function toWA(p){if(!p)return '';let n=String(p).replace(/[^0-9]/g,'');if(!n)return '';if(n.startsWith('0'))return '62'+n.slice(1);if(n.startsWith('62'))return n;if(n.startsWith('8'))return '62'+n;return '62'+n;}
 
-
-
-/* ═══ WO COMPARISON ═══ */
-const WO_ROWS=[
-  {id:'gedung',    label:'🏛️ Gedung / Venue',       price:false},
-  {id:'harga',     label:'💰 Harga Paket (Rp)',       price:true},
-  {id:'dp',        label:'💳 DP / Uang Muka (Rp)',    price:true},
-  {id:'pax',       label:'👥 Jumlah Pax / Tamu',      price:false},
-  {id:'mua',       label:'💄 MUA',                    price:false},
-  {id:'fotografer',label:'📸 Fotografer',             price:false},
-  {id:'katering',  label:'🍽️ Katering',              price:false},
-  {id:'jumlahmenu',label:'🥘 Jumlah Menu',            price:false},
-  {id:'jumlahbaju',label:'👗 Jumlah Outfit',          price:false},
-  {id:'band',      label:'🎵 Band / Musik',           price:false},
-  {id:'dekorasi',  label:'🌸 Dekorasi',               price:false},
-  {id:'mc',        label:'🎤 MC',                     price:false},
-  {id:'jumlahundangan',label:'📜 Jumlah Undangan',   price:false},
-  {id:'transportasi',  label:'🚗 Transportasi',       price:false},
-  {id:'honeymoon', label:'✈️ Honeymoon Package',      price:false},
-  {id:'jumlahrevisi',  label:'🔄 Jumlah Revisi',     price:false},
-  {id:'durasiKontrak', label:'📋 Durasi Kontrak',    price:false},
-  {id:'deadlinedp',label:'📅 Deadline DP',           price:false},
-  {id:'rating',    label:'⭐ Rating / Ulasan',        price:false},
-  {id:'catatan',   label:'📝 Catatan',                price:false},
-];
-
-let woData=[];
-
-function woLoad(){
-  $('woTableWrap').innerHTML='<div class="empty"><span class="ei">⏳</span>Memuat...</div>';
-  apicall('/api/wo').then(r=>{
-    woData=r.data||[];
-    woRender();
-  }).catch(err=>{
-    $('woTableWrap').innerHTML='<div class="empty"><span class="ei">⚠️</span>Gagal memuat: '+esc(err.message)+'</div>';
-  });
-}
-
-function woRender(){
-  const wrap=$('woTableWrap');
-  if(!wrap)return;
-  const wos=woData.slice(1); // skip header row
-  if(!wos.length){
-    wrap.innerHTML='<div class="empty"><span class="ei">⚖️</span>Belum ada WO.<br><button class="btn btn-gold btn-sm" onclick="woAdd()" style="margin-top:12px;">＋ Tambah WO Pertama</button></div>';
-    return;
-  }
-
-  // Hitung total harga per WO untuk highlight
-  const totals=wos.map(row=>{
-    const h=parseFloat(String(row[3]||'').replace(/[^0-9.]/g,''))||0;
-    const d=parseFloat(String(row[4]||'').replace(/[^0-9.]/g,''))||0;
-    return h; // pakai harga paket untuk perbandingan
-  });
-  const minT=Math.min(...totals.filter(t=>t>0));
-  const maxT=Math.max(...totals.filter(t=>t>0));
-
-  let h='<table class="wo-table"><thead><tr>';
-  h+='<th class="row-label">Aspek</th>';
-  wos.forEach((row,ci)=>{
-    const wid=String(row[0]);
-    const wname=esc(row[1]||('WO '+(ci+1)));
-    h+=`<th class="wo-head">${wname} <span class="wo-del-col" onclick="woDel('${wid}')" title="Hapus">✕</span></th>`;
-  });
-  h+='</tr></thead><tbody>';
-
-  // Rows data
-  WO_ROWS.forEach(rowDef=>{
-    const colIdx=woColIdx(rowDef.id);
-    h+=`<tr><td class="row-label">${rowDef.label}</td>`;
-    wos.forEach((row,ci)=>{
-      const wid=String(row[0]);
-      const val=esc(row[colIdx]||'');
-      const cls=rowDef.price?'wo-inp price':'wo-inp';
-      h+=`<td><input class="${cls}" value="${val}" placeholder="—"
-        onchange="woUpdate('${wid}','${rowDef.id}',this.value)"
-        onfocus="this.select()"></td>`;
-    });
-    h+='</tr>';
-  });
-
-  // Total row
-  h+='<tr class="wo-tr-total"><td class="row-label">💎 Total Harga Paket</td>';
-  wos.forEach((row,ci)=>{
-    const h2=parseFloat(String(row[3]||'').replace(/[^0-9.]/g,''))||0;
-    const isBest=h2>0&&h2===minT;
-    const isWorst=h2>0&&h2===maxT&&minT!==maxT;
-    const cls='wo-inp total'+(isBest?' best':isWorst?' worst':'');
-    const disp=h2>0?'Rp '+fRp(h2):'—';
-    h+=`<td><input class="${cls}" value="${disp}" readonly></td>`;
-  });
-  h+='</tr>';
-
-  h+='</tbody></table>';
-  wrap.innerHTML=h;
-}
-
-// Mapping field id ke kolom index di sheet row (0-based)
-function woColIdx(field){
-  const map={gedung:2,harga:3,dp:4,pax:5,mua:6,fotografer:7,
-    katering:8,jumlahmenu:9,jumlahbaju:10,band:11,dekorasi:12,
-    mc:13,jumlahundangan:14,transportasi:15,honeymoon:16,
-    jumlahrevisi:17,durasiKontrak:18,deadlinedp:19,rating:20,catatan:21};
-  return map[field]??2;
-}
-
-function woAdd(){
-  const inp=$('woNewName');
-  const name=(inp?inp.value.trim():'')||('WO '+(woData.length));
-  if(!name){showMessage('⚠ Nama WO wajib diisi');return;}
-  showSync('Menyimpan...');
-  apicall('/api/wo','POST',{woname:name}).then(id=>{
-    showSync('Tersimpan ✓','success');
-    showMessage('✅ WO ditambahkan');
-    if(inp)inp.value='';
-    woLoad();
-  }).catch(err=>{showSync('Gagal','error');showMessage('❌ '+err.message);});
-}
-
-function woUpdate(id,field,value){
-  apicall('/api/wo','PATCH',{id,field,value}).then(()=>{
-    showSync('Tersimpan ✓','success');
-    // Update lokal dan re-render untuk highlight total
-    const row=woData.find(r=>String(r[0])===String(id));
-    if(row){row[woColIdx(field)]=value;}
-    woRender();
-  }).catch(err=>{showSync('Gagal','error');showMessage('❌ '+err.message);});
-}
-
-function woDel(id){
-  if(!confirm('Hapus WO ini dari perbandingan?'))return;
-  apicall('/api/wo','DELETE',{id}).then(()=>{
-    showSync('Dihapus ✓','success');
-    showMessage('🗑 WO dihapus');
-    woLoad();
-  }).catch(err=>{showMessage('❌ '+err.message);});
-}
-
-function woPrint(){
-  const tbl=$('woTableWrap');
-  if(!tbl)return;
-  const win=window.open('','_blank');
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Perbandingan WO</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
-  <style>body{font-family:'DM Sans',sans-serif;padding:20px;color:#1a1a2e;}
-  h2{font-family:'Playfair Display',serif;color:#2e1250;margin-bottom:16px;}
-  table{width:100%;border-collapse:collapse;font-size:12px;}
-  th{background:#2e1250;color:#e8c97a;padding:8px 10px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.08em;}
-  td{padding:7px 10px;border-bottom:1px solid #e0d6f5;}
-  td:first-child{font-weight:600;color:#2e1250;background:#f8f5ff;}
-  tr:nth-child(even) td{background:#faf7ff;}tr:nth-child(even) td:first-child{background:#f0ebff;}
-  .total-tr td{background:#fffbea!important;font-weight:700;border-top:2px solid #c9a358;}
-  input{border:none;background:transparent;font-family:inherit;font-size:inherit;color:inherit;width:100%;}
-  </style></head><body>
-  <h2>⚖️ Perbandingan Wedding Organizer — Zultoni & Beska</h2>
-  ${tbl.innerHTML}
-  </body></html>`);
-  win.document.close();
-  setTimeout(()=>win.print(),500);
-}
-
 /* ═══ INIT ═══ */
 window.addEventListener('load',()=>{
   loadRundownFromSheet();
@@ -1401,7 +1202,6 @@ window.addEventListener('load',()=>{
     loadRSVPList();
     loadVendors();
     loadRundownFromSheet();
-    if(woData.length)woLoad();
   }, 30000);
 
   // Refresh saat user kembali ke tab ini
