@@ -1,16 +1,22 @@
 // pages/api/vendor-file-delete.js
 // DELETE /api/vendor-file-delete
-// Body: { fileId, mimeType }
+// Body: { fileId }  ← fileId di sini adalah "key" dari Backblaze B2
 
-import { v2 as cloudinary } from "cloudinary";
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 
 export const config = { api: { bodyParser: true } };
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key:    process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+function getS3Client() {
+  return new S3Client({
+    endpoint: `https://${process.env.B2_ENDPOINT}`,
+    region: process.env.B2_REGION || "us-west-004",
+    credentials: {
+      accessKeyId: process.env.B2_KEY_ID,
+      secretAccessKey: process.env.B2_APPLICATION_KEY,
+    },
+    forcePathStyle: true,
+  });
+}
 
 export default async function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
@@ -19,18 +25,17 @@ export default async function handler(req, res) {
     return res.status(405).json({ success: false, error: "Method not allowed" });
   }
 
-  const { fileId, mimeType } = req.body || {};
+  const { fileId } = req.body || {};
   if (!fileId) {
     return res.status(400).json({ success: false, error: "fileId wajib diisi" });
   }
 
   try {
-    // Coba hapus sebagai image dulu, kalau gagal coba raw (PDF)
-    let destroyed = false;
-    for (const rt of ["image", "raw", "video"]) {
-      const result = await cloudinary.uploader.destroy(fileId, { resource_type: rt });
-      if (result.result === "ok") { destroyed = true; break; }
-    }
+    const client = getS3Client();
+    await client.send(new DeleteObjectCommand({
+      Bucket: process.env.B2_BUCKET_NAME,
+      Key: fileId,
+    }));
     return res.status(200).json({ success: true });
   } catch (err) {
     console.error("[vendor-file-delete]", err);
