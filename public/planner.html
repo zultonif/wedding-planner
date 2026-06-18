@@ -311,33 +311,6 @@
     .upl-progress { width:100%; height:3px; background:rgba(255,255,255,.1); border-radius:99px; margin-top:6px; overflow:hidden; display:none; }
     .upl-progress-bar { height:100%; width:0%; background:linear-gradient(90deg,var(--gold),var(--rose)); border-radius:99px; transition:width .3s; }
     .upl-progress.show { display:block; }
-
-    /* ── WO Comparison Table ── */
-    #woTable{width:100%;border-collapse:collapse;font-size:13px;}
-    #woTable th{padding:10px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gold-l);border-bottom:2px solid var(--violet);background:linear-gradient(135deg,#1b0d38,#2e1250);white-space:nowrap;position:sticky;top:0;z-index:2;}
-    #woTable th:first-child{background:linear-gradient(135deg,#110820,#1b0d38);color:var(--text-muted);min-width:150px;position:sticky;left:0;z-index:3;}
-    #woTable th.wo-col-head{background:linear-gradient(135deg,#1e0d3e,#33154f);min-width:160px;}
-    #woTable td{padding:0;border-bottom:1px solid rgba(124,90,170,.15);vertical-align:middle;}
-    #woTable td:first-child{background:rgba(17,8,32,.9);position:sticky;left:0;z-index:1;padding:10px 14px;font-weight:600;font-size:12px;color:var(--gold-l);white-space:nowrap;}
-    #woTable tr:nth-child(even) td:first-child{background:rgba(27,13,56,.85);}
-    #woTable tr.wo-row-price td:first-child,#woTable tr.wo-row-total td:first-child{color:var(--gold);}
-    #woTable tr.wo-row-total{background:rgba(201,163,88,.07);}
-    #woTable tr.wo-row-total td{border-top:2px solid var(--border-gold);border-bottom:none;font-weight:700;}
-    #woTable tr:hover td{background:rgba(124,90,170,.08);}
-    #woTable tr:hover td:first-child{background:rgba(27,13,56,.95);}
-    .wo-cell-input{width:100%;min-height:38px;padding:9px 12px;background:transparent;border:none;color:var(--text);font-size:13px;font-family:inherit;cursor:pointer;transition:background .15s;}
-    .wo-cell-input:focus{outline:none;background:rgba(124,90,170,.18);border-radius:0;}
-    .wo-cell-input::placeholder{color:var(--text-muted);font-style:italic;}
-    .wo-cell-input.price-cell{color:var(--ok);font-weight:600;}
-    .wo-cell-input.total-cell{color:var(--gold-l);font-weight:700;font-size:14px;}
-    .wo-cell-input.best-val{background:rgba(92,191,138,.08);}
-    .wo-cell-input.worst-val{background:rgba(224,92,122,.06);}
-    .wo-col-del{cursor:pointer;opacity:.4;font-size:11px;padding:4px 6px;transition:opacity .15s;display:inline-block;vertical-align:middle;}
-    .wo-col-del:hover{opacity:1;color:var(--danger);}
-    .wo-row-del{cursor:pointer;opacity:.3;font-size:11px;color:var(--danger);padding:0 8px;display:inline-block;vertical-align:middle;}
-    .wo-row-del:hover{opacity:1;}
-    .wo-winner-badge{display:inline-block;font-size:9px;padding:2px 7px;border-radius:99px;background:rgba(201,163,88,.2);color:var(--gold-l);border:1px solid rgba(201,163,88,.3);margin-left:6px;font-weight:700;letter-spacing:.05em;vertical-align:middle;}
-    .wo-score-bar{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--violet),var(--gold));margin-top:4px;transition:width .3s;}
   </style>
 </head>
 
@@ -379,7 +352,6 @@
     <button onclick="showSection('rundown')" id="nav-rundown">🗓️ Rundown</button>
     <button onclick="showSection('rsvp')" id="nav-rsvp">💌 RSVP</button>
     <button onclick="showSection('vendor')" id="nav-vendor">🏪 Vendor</button>
-    <button onclick="showSection('wo')" id="nav-wo">⚖️ Banding WO</button>
   </div>
   <div id="message"></div>
   <!-- DASHBOARD -->
@@ -500,39 +472,8 @@
       </div>
       <hr class="rsvp-divider">
       <div id="vendorList"><div class="empty"><span class="ei">🏪</span>Memuat data vendor...</div></div>
-  </div>
-
-  <!-- ═══ WO COMPARISON SECTION ═══ -->
-  <div id="woSection" class="section">
-    <div class="card">
-      <div class="card-title"><span class="ct-icon">⚖️</span>Perbandingan Wedding Organizer</div>
-      <p class="edit-hint" style="margin-bottom:16px;">✅ Bandingkan paket dari berbagai WO dalam satu tabel — klik sel untuk edit langsung</p>
-
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
-        <input class="add-input" id="woNewName" placeholder="Nama WO / Paket baru..." style="margin:0;flex:1;min-width:180px;">
-        <button class="btn btn-gold" onclick="woAddColumn()">＋ Tambah WO</button>
-        <button class="btn btn-ghost btn-sm" onclick="woAddRow()">＋ Tambah Baris</button>
-        <button class="btn btn-ghost btn-sm" onclick="woClearConfirm()" style="color:var(--danger);border-color:var(--danger);">🗑 Reset</button>
-        <button class="btn btn-ghost btn-sm" onclick="woPrint()">🖨️ Cetak</button>
-      </div>
-
-      <div id="woTableWrap" style="overflow-x:auto;border-radius:12px;border:1px solid var(--border);">
-        <div id="woTable"><!-- rendered by JS --></div>
-      </div>
-
-      <div style="margin-top:14px;padding:12px 14px;background:var(--violet-pale);border-radius:10px;border:1px solid rgba(124,90,170,.25);">
-        <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;">💡 Cara pakai</div>
-        <div style="font-size:12px;color:var(--text-muted);line-height:1.7;">
-          Klik <b style="color:var(--gold-l)">＋ Tambah WO</b> untuk menambah kolom WO baru &nbsp;·&nbsp;
-          Klik <b style="color:var(--gold-l)">＋ Tambah Baris</b> untuk baris perbandingan custom &nbsp;·&nbsp;
-          Klik sel mana saja untuk mengedit &nbsp;·&nbsp;
-          Baris harga & total dihitung otomatis &nbsp;·&nbsp;
-          Data tersimpan di browser (localStorage)
-        </div>
-      </div>
     </div>
   </div>
-
 </div>
 <script>
 /* ═══ API BRIDGE ═══ */
@@ -630,7 +571,7 @@ function setView(m){
   try{localStorage.setItem('bride_view',m)}catch(e){}
 }
 (function(){try{const v=localStorage.getItem('bride_view');if(v==='mobile')setView('mobile')}catch(e){}})();
-const SECS={dashboard:'dashboard',lamaran:'lamaranSection',pernikahan:'pernikahanSection',seserahan:'seserahanSection',rundown:'rundownSection',rsvp:'rsvpSection',vendor:'vendorSection',wo:'woSection'};
+const SECS={dashboard:'dashboard',lamaran:'lamaranSection',pernikahan:'pernikahanSection',seserahan:'seserahanSection',rundown:'rundownSection',rsvp:'rsvpSection',vendor:'vendorSection'};
 function showSection(k){
   Object.values(SECS).forEach(id=>{const el=$(id);if(el)el.classList.remove('active')});
   Object.keys(SECS).forEach(k2=>{const el=$('nav-'+k2);if(el)el.classList.remove('nav-active')});
@@ -1247,286 +1188,6 @@ function deleteRSVP(id){
 }
 function fmtPhone(p){if(!p)return '-';let n=String(p).replace(/[^0-9]/g,'');if(!n)return '-';if(n.startsWith('0'))n='62'+n.slice(1);else if(n.startsWith('8'))n='62'+n;return '+'+n.slice(0,2)+' '+n.slice(2,5)+'-'+n.slice(5,9)+'-'+n.slice(9);}
 function toWA(p){if(!p)return '';let n=String(p).replace(/[^0-9]/g,'');if(!n)return '';if(n.startsWith('0'))return '62'+n.slice(1);if(n.startsWith('62'))return n;if(n.startsWith('8'))return '62'+n;return '62'+n;}
-
-
-/* ═══════════════════════════════════════════════════════
-   WO COMPARISON — Perbandingan Wedding Organizer
-   Data disimpan di localStorage
-════════════════════════════════════════════════════════ */
-
-const WO_STORAGE_KEY = 'bride_wo_comparison_v2';
-
-// Baris default (rows) — label, type, icon
-const WO_DEFAULT_ROWS = [
-  {id:'gedung',    label:'Gedung / Venue',       type:'text',  icon:'🏛️', hint:'Nama gedung yang dipakai'},
-  {id:'harga',     label:'Harga Paket (Rp)',      type:'price', icon:'💰', hint:'Total harga paket WO'},
-  {id:'dp',        label:'DP / Uang Muka (Rp)',   type:'price', icon:'💳', hint:'Jumlah DP yang harus dibayar'},
-  {id:'pax',       label:'Jumlah Pax / Tamu',     type:'number',icon:'👥', hint:'Kapasitas tamu undangan'},
-  {id:'mua',       label:'MUA (Make Up Artist)',  type:'text',  icon:'💄', hint:'Nama MUA yang dipakai'},
-  {id:'foto',      label:'Fotografer',            type:'text',  icon:'📸', hint:'Nama fotografer / videografer'},
-  {id:'katering',  label:'Katering',              type:'text',  icon:'🍽️', hint:'Nama vendor katering'},
-  {id:'menu',      label:'Jumlah Menu Katering',  type:'number',icon:'🥘', hint:'Berapa jenis menu yang tersedia'},
-  {id:'baju',      label:'Jumlah Baju / Outfit',  type:'number',icon:'👗', hint:'Berapa stel baju pengantin'},
-  {id:'band',      label:'Band / Musik',          type:'text',  icon:'🎵', hint:'Nama band atau jenis hiburan'},
-  {id:'dekorasi',  label:'Dekorasi',              type:'text',  icon:'🌸', hint:'Nama vendor / tema dekorasi'},
-  {id:'mc',        label:'MC',                    type:'text',  icon:'🎤', hint:'Nama MC acara'},
-  {id:'undangan',  label:'Jumlah Undangan',       type:'number',icon:'📜', hint:'Kuota undangan yang disediakan'},
-  {id:'transportasi',label:'Transportasi',        type:'text',  icon:'🚗', hint:'Fasilitas transportasi'},
-  {id:'honeymoon', label:'Honeymoon Package',     type:'text',  icon:'✈️', hint:'Paket bulan madu (jika ada)'},
-  {id:'revisi',    label:'Jumlah Revisi',         type:'number',icon:'🔄', hint:'Berapa kali revisi diperbolehkan'},
-  {id:'kontrak',   label:'Durasi Kontrak',        type:'text',  icon:'📋', hint:'Berapa jam / hari kontrak berlaku'},
-  {id:'dp_deadline',label:'Deadline DP',         type:'text',  icon:'📅', hint:'Batas waktu pembayaran DP'},
-  {id:'rating',    label:'Rating / Ulasan',       type:'text',  icon:'⭐', hint:'Rating atau ulasan dari klien lain'},
-  {id:'catatan',   label:'Catatan',               type:'text',  icon:'📝', hint:'Catatan atau kelebihan lainnya'},
-];
-
-let woState = {
-  columns: [], // [{id, name}]
-  rows: [],    // [{id, label, type, icon, hint}] — bisa ditambah custom
-  cells: {},   // { rowId_colId: value }
-};
-
-function woLoad(){
-  try{
-    const s=localStorage.getItem(WO_STORAGE_KEY);
-    if(s) woState=JSON.parse(s);
-    // Pastikan rows ada (upgrade dari versi lama)
-    if(!woState.rows||!woState.rows.length) woState.rows=[...WO_DEFAULT_ROWS];
-    if(!woState.columns) woState.columns=[];
-    if(!woState.cells) woState.cells={};
-  }catch(e){
-    woState={columns:[],rows:[...WO_DEFAULT_ROWS],cells:{}};
-  }
-}
-
-function woSave(){
-  try{localStorage.setItem(WO_STORAGE_KEY,JSON.stringify(woState));}catch(e){}
-}
-
-function woCellKey(rowId,colId){return rowId+'__'+colId;}
-
-function woGetCell(rowId,colId){return woState.cells[woCellKey(rowId,colId)]||'';}
-
-function woSetCell(rowId,colId,val){
-  woState.cells[woCellKey(rowId,colId)]=val;
-  woSave();
-  // Kalau row price → update total
-  const row=woState.rows.find(r=>r.id===rowId);
-  if(row&&row.type==='price') woUpdateTotals();
-}
-
-function woUpdateTotals(){
-  woState.columns.forEach(col=>{
-    let total=0;
-    woState.rows.forEach(row=>{
-      if(row.type==='price'){
-        const v=parseFloat(String(woGetCell(row.id,col.id)).replace(/[^0-9.]/g,''))||0;
-        total+=v;
-      }
-    });
-    const el=document.getElementById('wo-total-'+col.id);
-    if(el) el.value=total>0?'Rp '+fRp(total):'';
-    // Highlight sel terbaik (harga terendah)
-  });
-  woHighlightBest();
-}
-
-function woHighlightBest(){
-  // Harga terbaik = terendah; rating/pax/menu terbaik = tertinggi
-  const priceRows=woState.rows.filter(r=>r.type==='price');
-  const numRows=woState.rows.filter(r=>r.type==='number');
-
-  // Harga total — tandai yang termurah
-  const totals=woState.columns.map(col=>{
-    let t=0;
-    priceRows.forEach(row=>{t+=parseFloat(String(woGetCell(row.id,col.id)).replace(/[^0-9.]/g,''))||0;});
-    return{col,t};
-  }).filter(x=>x.t>0);
-  if(totals.length>1){
-    const mn=Math.min(...totals.map(x=>x.t));
-    const mx=Math.max(...totals.map(x=>x.t));
-    totals.forEach(({col,t})=>{
-      const el=document.getElementById('wo-total-'+col.id);
-      if(el){
-        el.classList.toggle('best-val',t===mn);
-        el.classList.toggle('worst-val',t===mx&&t!==mn);
-      }
-    });
-  }
-}
-
-function woRender(){
-  woLoad();
-  const wrap=document.getElementById('woTable');
-  if(!wrap)return;
-  if(!woState.columns.length){
-    wrap.innerHTML='<div class="empty" style="padding:40px;text-align:center;"><span class="ei">⚖️</span><br>Belum ada WO yang dibandingkan.<br><button class="btn btn-gold btn-sm" onclick="woAddColumn()" style="margin-top:14px;">＋ Tambah WO Pertama</button></div>';
-    return;
-  }
-
-  let html='<table id="woTable" style="width:100%;border-collapse:collapse;">';
-
-  // Header
-  html+='<thead><tr>';
-  html+='<th style="padding:10px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);border-bottom:2px solid var(--violet);background:linear-gradient(135deg,#110820,#1b0d38);white-space:nowrap;min-width:160px;">Aspek Perbandingan</th>';
-  woState.columns.forEach((col,ci)=>{
-    html+=`<th style="padding:10px 14px;font-size:12px;font-weight:700;color:var(--gold-l);border-bottom:2px solid var(--violet);background:linear-gradient(135deg,#1e0d3e,#33154f);white-space:nowrap;min-width:170px;text-align:center;">`;
-    html+=`<span contenteditable="true" style="outline:none;cursor:text;" onblur="woRenameCol('${col.id}',this.textContent.trim())" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur();}">${esc(col.name)}</span>`;
-    html+=`&nbsp;<span class="wo-col-del" onclick="woDeleteCol('${col.id}')" title="Hapus kolom ini">✕</span>`;
-    html+='</th>';
-  });
-  html+='</tr></thead>';
-
-  // Rows
-  html+='<tbody>';
-  woState.rows.forEach((row,ri)=>{
-    const isTotalRow=row.id==='__total__';
-    const trStyle=isTotalRow?'background:rgba(201,163,88,.07);':'';
-    html+=`<tr style="${trStyle}">`;
-
-    // Label kolom kiri
-    if(isTotalRow){
-      html+=`<td style="padding:10px 14px;font-weight:700;font-size:13px;color:var(--gold);background:rgba(17,8,32,.9);border-top:2px solid var(--border-gold);white-space:nowrap;">💎 Total Harga Paket</td>`;
-    } else {
-      html+=`<td style="padding:8px 14px;background:rgba(17,8,32,.85);font-size:12px;color:var(--gold-l);font-weight:600;white-space:nowrap;">`;
-      html+=`<span title="${esc(row.hint||'')}">${row.icon||''} ${esc(row.label)}</span>`;
-      if(!WO_DEFAULT_ROWS.find(r=>r.id===row.id)){
-        // Custom row — bisa dihapus
-        html+=`<span class="wo-row-del" onclick="woDeleteRow('${row.id}')" title="Hapus baris">✕</span>`;
-      }
-      html+='</td>';
-    }
-
-    // Cells per column
-    woState.columns.forEach(col=>{
-      const cellKey=woCellKey(row.id,col.id);
-      const val=woState.cells[cellKey]||'';
-      if(isTotalRow){
-        // Total row — readonly display
-        html+=`<td style="border-top:2px solid var(--border-gold);padding:0;">`;
-        html+=`<input id="wo-total-${col.id}" class="wo-cell-input total-cell" readonly value="${esc(val)}" style="font-weight:700;color:var(--gold-l);font-size:14px;cursor:default;text-align:center;">`;
-        html+='</td>';
-      } else if(row.type==='price'){
-        html+=`<td style="padding:0;border-bottom:1px solid rgba(124,90,170,.15);">`;
-        html+=`<input class="wo-cell-input price-cell" value="${esc(val)}" placeholder="Rp 0" inputmode="numeric"
-          onchange="woSetCell('${row.id}','${col.id}',this.value)"
-          onfocus="this.select()"
-          style="text-align:right;color:var(--ok);">`;
-        html+='</td>';
-      } else if(row.type==='number'){
-        html+=`<td style="padding:0;border-bottom:1px solid rgba(124,90,170,.15);">`;
-        html+=`<input class="wo-cell-input" value="${esc(val)}" placeholder="—" inputmode="numeric"
-          onchange="woSetCell('${row.id}','${col.id}',this.value)"
-          onfocus="this.select()"
-          style="text-align:center;">`;
-        html+='</td>';
-      } else {
-        html+=`<td style="padding:0;border-bottom:1px solid rgba(124,90,170,.15);">`;
-        html+=`<input class="wo-cell-input" value="${esc(val)}" placeholder="—"
-          onchange="woSetCell('${row.id}','${col.id}',this.value)"
-          onfocus="this.select()">`;
-        html+='</td>';
-      }
-    });
-    html+='</tr>';
-  });
-  html+='</tbody></table>';
-
-  wrap.innerHTML=html;
-  woUpdateTotals();
-}
-
-function woAddColumn(){
-  const inp=document.getElementById('woNewName');
-  const name=(inp?inp.value.trim():'')||('WO '+(woState.columns.length+1));
-  const id='wo_col_'+Date.now();
-  woState.columns.push({id,name});
-
-  // Pastikan ada baris total di akhir
-  if(!woState.rows.find(r=>r.id==='__total__')){
-    woState.rows.push({id:'__total__',label:'Total',type:'total',icon:'💎',hint:''});
-  }
-
-  woSave();
-  if(inp)inp.value='';
-  woRender();
-}
-
-function woDeleteCol(colId){
-  if(!confirm('Hapus kolom WO ini?'))return;
-  woState.columns=woState.columns.filter(c=>c.id!==colId);
-  // Hapus semua cells kolom ini
-  Object.keys(woState.cells).forEach(k=>{if(k.includes('__'+colId))delete woState.cells[k];});
-  woSave();
-  woRender();
-}
-
-function woRenameCol(colId,newName){
-  const col=woState.columns.find(c=>c.id===colId);
-  if(col&&newName){col.name=newName;woSave();}
-}
-
-function woAddRow(){
-  const label=prompt('Nama aspek perbandingan baru:');
-  if(!label||!label.trim())return;
-  const id='custom_'+Date.now();
-  // Insert sebelum baris total
-  const totalIdx=woState.rows.findIndex(r=>r.id==='__total__');
-  const newRow={id,label:label.trim(),type:'text',icon:'📌',hint:'Custom'};
-  if(totalIdx>=0) woState.rows.splice(totalIdx,0,newRow);
-  else woState.rows.push(newRow);
-  woSave();
-  woRender();
-}
-
-function woDeleteRow(rowId){
-  woState.rows=woState.rows.filter(r=>r.id!==rowId);
-  Object.keys(woState.cells).forEach(k=>{if(k.startsWith(rowId+'__'))delete woState.cells[k];});
-  woSave();
-  woRender();
-}
-
-function woClearConfirm(){
-  if(!confirm('Reset semua data perbandingan WO? Data tidak bisa dikembalikan.'))return;
-  woState={columns:[],rows:[...WO_DEFAULT_ROWS],cells:{}};
-  woSave();
-  woRender();
-}
-
-function woPrint(){
-  const win=window.open('','_blank');
-  const tbl=document.getElementById('woTable');
-  if(!tbl){win.close();return;}
-  win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Perbandingan WO — Zultoni & Beska</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <style>
-    body{font-family:'DM Sans',sans-serif;background:#fff;color:#1a1a2e;padding:24px;font-size:13px;}
-    h2{font-family:'Playfair Display',serif;color:#2e1250;margin-bottom:4px;}
-    .sub{color:#7c5aaa;font-size:11px;margin-bottom:20px;}
-    table{width:100%;border-collapse:collapse;}
-    th{background:#2e1250;color:#e8c97a;padding:8px 12px;font-size:10px;text-transform:uppercase;letter-spacing:.1em;text-align:left;white-space:nowrap;}
-    td{padding:8px 12px;border-bottom:1px solid #e0d6f5;font-size:12px;vertical-align:middle;}
-    td:first-child{font-weight:600;color:#2e1250;white-space:nowrap;background:#f8f5ff;}
-    tr:nth-child(even) td{background:#faf7ff;}
-    tr:nth-child(even) td:first-child{background:#f0ebff;}
-    .total-row td{background:#fffbea!important;font-weight:700;border-top:2px solid #c9a358;color:#7a5c00;}
-    input{border:none;background:transparent;font-family:inherit;font-size:inherit;color:inherit;width:100%;font-weight:inherit;}
-    @media print{body{padding:8px;}h2{font-size:16px;}}
-  </style></head><body>
-  <h2>⚖️ Perbandingan Wedding Organizer</h2>
-  <div class="sub">Zultoni & Beska · Dicetak ${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</div>
-  ${tbl.outerHTML}
-  </body></html>`);
-  win.document.close();
-  setTimeout(()=>win.print(),600);
-}
-
-// Init saat section pertama kali dibuka
-const _origShowSection=showSection;
-function showSection(k){
-  _origShowSection(k);
-  if(k==='wo') woRender();
-}
 
 /* ═══ INIT ═══ */
 window.addEventListener('load',()=>{
