@@ -29,6 +29,11 @@ function getS3Client() {
       accessKeyId: process.env.B2_KEY_ID,
       secretAccessKey: process.env.B2_APPLICATION_KEY,
     },
+    // Backblaze B2 tidak support checksum CRC32 yang ditambahkan AWS SDK v3.700+
+    // Tanpa ini, presigned URL akan mengandung x-amz-checksum-crc32 yang
+    // menyebabkan CORS preflight gagal karena B2 tidak mengenali header tersebut.
+    requestChecksumCalculation: "WHEN_REQUIRED",
+    responseChecksumValidation: "WHEN_REQUIRED",
   });
 }
 
@@ -60,6 +65,7 @@ export default async function handler(req, res) {
       Bucket: process.env.B2_BUCKET_NAME,
       Key: key,
       ContentType: fileType,
+      ChecksumAlgorithm: undefined, // eksplisit nonaktifkan checksum — B2 tidak support
     });
 
     // URL ini berlaku 10 menit, cukup untuk upload file besar
