@@ -29,7 +29,6 @@ function getS3Client() {
       accessKeyId: process.env.B2_KEY_ID,
       secretAccessKey: process.env.B2_APPLICATION_KEY,
     },
-    forcePathStyle: true, // wajib untuk Backblaze B2
   });
 }
 
