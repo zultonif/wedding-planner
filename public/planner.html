@@ -1195,6 +1195,24 @@ window.addEventListener('load',()=>{
   loadChecklist();
   loadRSVPList();
   loadVendors();
+
+  // Auto-refresh semua data setiap 30 detik
+  setInterval(()=>{
+    loadChecklist();
+    loadRSVPList();
+    loadVendors();
+    loadRundownFromSheet();
+  }, 30000);
+
+  // Refresh saat user kembali ke tab ini
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible'){
+      loadChecklist();
+      loadRSVPList();
+      loadVendors();
+      loadRundownFromSheet();
+    }
+  });
 });
 </script>
 </body>
