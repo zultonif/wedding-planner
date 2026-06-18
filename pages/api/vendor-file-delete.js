@@ -9,12 +9,11 @@ export const config = { api: { bodyParser: true } };
 function getS3Client() {
   return new S3Client({
     endpoint: `https://${process.env.B2_ENDPOINT}`,
-    region: process.env.B2_REGION || "us-west-004",
+    region: process.env.B2_REGION,
     credentials: {
       accessKeyId: process.env.B2_KEY_ID,
       secretAccessKey: process.env.B2_APPLICATION_KEY,
     },
-    forcePathStyle: true,
   });
 }
 
