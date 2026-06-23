@@ -475,6 +475,7 @@
   <div id="vendorSection" class="section">
     <div class="card">
       <div class="card-title"><span class="ct-icon">🏪</span>Manajemen Vendor</div>
+      <p class="edit-hint" style="margin-bottom:14px;">✅ Data vendor tersimpan di Google Sheets — bisa dilihat semua orang</p>
       <div class="print-toolbar"><button class="btn btn-gold btn-sm" onclick="printVendors()">🖨️ Cetak Daftar Vendor</button></div>
       <div class="vendor-form">
         <div class="form-group"><label>Nama Vendor</label><input class="add-input" id="vName" placeholder="Nama usaha/vendor..." style="margin:0"></div>
@@ -493,6 +494,14 @@
         <div class="form-group"><label>Estimasi Harga (Rp)</label><input class="add-input" id="vPrice" type="number" placeholder="0" style="margin:0"></div>
         <div class="form-group full-row"><label>Alamat / Lokasi</label><input class="add-input" id="vAddress" placeholder="Alamat lengkap atau link Google Maps..." style="margin:0"></div>
         <div class="form-group"><label>Instagram / Website</label><input class="add-input" id="vSocial" placeholder="@username atau https://..." style="margin:0"></div>
+        <div class="form-group full-row">
+          <label>Lampirkan File (opsional)</label>
+          <div class="vendor-file-upload" style="margin:0;">
+            <input type="file" id="vFile" accept="application/pdf,image/jpeg,image/png,image/webp,image/gif" onchange="vFilePreview(this)">
+            <span class="upl-icon">📎</span>
+            <div class="upl-text"><strong id="vFileLabel">Lampirkan file</strong>PDF · JPG · PNG · WEBP · maks. 200 MB</div>
+          </div>
+        </div>
         <div class="form-group" style="align-self:flex-end;"><button class="btn btn-gold" onclick="addVendor()" style="width:100%;">＋ Simpan Vendor</button></div>
       </div>
       <hr class="rsvp-divider">
@@ -504,7 +513,8 @@
   <div id="woSection" class="section">
     <div class="card">
       <div class="card-title"><span class="ct-icon">⚖️</span>Perbandingan Wedding Organizer</div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
+      <p class="edit-hint" style="margin-bottom:16px;">✅ Data tersimpan di Google Sheets — bisa dilihat semua orang</p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
         <input class="add-input" id="woNewName" placeholder="Nama WO / Paket baru..." style="margin:0;flex:1;min-width:180px;">
         <button class="btn btn-gold" onclick="woAdd()">＋ Tambah WO</button>
         <button class="btn btn-ghost btn-sm" onclick="woPrint()">🖨️ Cetak</button>
@@ -795,9 +805,17 @@ function loadVendors(){
   });
 }
 
+function vFilePreview(input){
+  const lbl=$('vFileLabel');
+  if(!lbl)return;
+  lbl.textContent=(input.files&&input.files[0])?'📄 '+input.files[0].name:'Lampirkan file';
+}
+
 function addVendor(){
   const nama=($('vName').value||'').trim();if(!nama){showMessage('⚠ Nama vendor wajib diisi');return;}
   const payload={nama,kategori:$('vCategory').value||'Lainnya',desc:($('vDesc').value||'').trim(),phone:($('vPhone').value||'').trim(),harga:Number($('vPrice').value)||0,address:($('vAddress').value||'').trim(),social:($('vSocial').value||'').trim()};
+  const fileInputEl=$('vFile');
+  const pendingFile=(fileInputEl&&fileInputEl.files&&fileInputEl.files[0])?fileInputEl.files[0]:null;
   const tmp='tmp_v_'+Date.now();
   const tmpRow=[tmp,payload.nama,payload.kategori,payload.desc,payload.phone,payload.harga,payload.address,payload.social,'Aktif',[]];
   if(!vendorData.length)vendorData=[['ID','Nama','Kategori','Deskripsi','Phone','Harga','Alamat','Social','Status','Files']];
@@ -808,13 +826,25 @@ function addVendor(){
   const card=div.firstElementChild;card.classList.add('item-entering','item-pending');
   listEl.insertBefore(card,listEl.firstChild);
   $('vName').value=$('vDesc').value=$('vPhone').value=$('vPrice').value=$('vAddress').value=$('vSocial').value='';
-  showSync('Menyimpan vendor ke Sheets...');
+  if(fileInputEl)fileInputEl.value='';
+  vFilePreview({files:[]});
+  showSync(pendingFile?'Menyimpan vendor & file...':'Menyimpan vendor ke Sheets...');
   api.addVendor(payload).then(realId=>{
     const idx=vendorData.findIndex(r=>r[0]===tmp);if(idx>-1)vendorData[idx][0]=String(realId);
     vFiles[String(realId)]=vFiles[tmp]||[];delete vFiles[tmp];
     const tc=document.getElementById('vc-'+tmp);
     if(tc){const nd=document.createElement('div');nd.innerHTML=buildVendorCard(vendorData[idx]);const nc=nd.firstElementChild;nc.classList.add('sync-ok');tc.replaceWith(nc);setTimeout(()=>nc.classList.remove('sync-ok'),2000);}
     showSync('Vendor tersimpan ✓','success');showMessage('✅ Vendor disimpan di Google Sheets');
+    if(pendingFile){
+      const newCard=document.getElementById('vc-'+realId);
+      const newFileInput=newCard?newCard.querySelector('.vendor-file-upload input[type="file"]'):null;
+      if(newFileInput){
+        try{
+          const dt=new DataTransfer();dt.items.add(pendingFile);newFileInput.files=dt.files;
+          uploadFile(String(realId),newFileInput);
+        }catch(e){showMessage('⚠ Vendor tersimpan, tapi gagal melampirkan file otomatis — silakan upload manual lewat tombol 📎 di card vendor.');}
+      }
+    }
   }).catch(err=>{
     const tc=document.getElementById('vc-'+tmp);if(tc){tc.classList.add('item-removing');setTimeout(()=>tc.remove(),250);}
     vendorData=vendorData.filter(r=>r[0]!==tmp);delete vFiles[tmp];
@@ -850,7 +880,7 @@ function buildVendorCard(row){
       +'<div class="fi-info"><div class="fi-name">'+esc(f.name)+'</div><div class="fi-meta">'+fmtSize(f.size)+' · '+esc(f.uploadedAt||'')+'</div></div>'
       +'<div class="fi-acts">'
       +'<button class="btn btn-ghost btn-xs" onclick="openFile(\''+id+'\',\''+f.fileId+'\')">👁 Lihat</button>'
-      +'<button class="btn btn-ghost btn-xs" onclick="dlFile(\''+id+'\',\''+f.fileId+'\')">⬇️</button>'
+      +'<button class="btn btn-ghost btn-xs" onclick="dlFile(\''+id+'\',\''+f.fileId+'\')">⬇</button>'
       +'<button class="btn btn-danger btn-xs" onclick="delFile(\''+id+'\',\''+f.fileId+'\')">🗑</button>'
       +'</div></div>';
   }).join('');
@@ -1179,11 +1209,49 @@ function printChecklist(sh){
 
 function printRSVP(){
   if(!rsvpData||rsvpData.length<=1){showMessage('⚠ Belum ada RSVP');return;}
-  const d=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  let cards='';
-  for(let i=1;i<rsvpData.length;i++){const nm=rsvpData[i][1]||'';cards+=`<div style="background:linear-gradient(145deg,#110820,#1b0d38,#2e1250);border:1px solid rgba(124,90,170,.4);border-radius:20px;padding:28px 24px;text-align:center;page-break-inside:avoid;break-inside:avoid;position:relative;overflow:hidden;margin-bottom:16px"><div style="font-family:'Cinzel',serif;font-size:10px;color:rgba(201,163,88,.7);letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px">&#xFD3F; بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ &#xFD3E;</div><div style="font-size:9px;color:rgba(232,224,245,.4);text-transform:uppercase;letter-spacing:.2em;margin-bottom:12px">&#10022; Dengan Hormat &#10022;</div><div style="font-size:9px;color:rgba(232,224,245,.4);text-transform:uppercase;letter-spacing:.15em;margin-bottom:8px;font-weight:600">Kepada Yth.</div><div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.25">${esc(nm)}</div><div style="font-size:10px;color:rgba(232,224,245,.4);margin-bottom:18px;font-style:italic">Beserta Keluarga</div><div style="font-size:24px;color:#c9a358;margin-bottom:12px">&#9819;</div><div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#e8dff5;margin-bottom:10px;font-style:italic">Zultoni Febriansyah <span style="color:#c9a358">&amp;</span> Beska Alfatihah</div><div style="font-size:11px;color:rgba(232,224,245,.5);line-height:1.75;margin-bottom:16px">Mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada acara pernikahan kami.</div><div style="font-size:10px;color:#c9a358;font-style:italic;border-top:1px solid rgba(201,163,88,.25);padding-top:10px">Kehadiran Anda adalah kebahagiaan kami &#10022;</div></div>`;}
+  const names=rsvpData.slice(1).map(r=>r[1]||'');
+
+  const cardHTML=nm=>`<div class="inv-card"><div class="inv-card-inner">
+    <div class="inv-bismillah">&#xFD3F; بِسْـمِ اللَّـهِ الـرَّحْمَنِ الـرَّحِيمِ &#xFD3E;</div>
+    <div class="inv-label">&#10022; Dengan Hormat &#10022;</div>
+    <div class="inv-kepada">Kepada Yth.</div>
+    <div class="inv-name">${esc(nm)}</div>
+    <div class="inv-family">Beserta Keluarga</div>
+    <div class="inv-crown">&#9819;</div>
+    <div class="inv-couple">Zultoni Febriansyah <span class="amp">&amp;</span> Beska Alfatihah</div>
+    <div class="inv-msg">Mengundang Bapak/Ibu/Saudara/i untuk hadir dan memberikan doa restu pada acara pernikahan kami.</div>
+    <div class="inv-footer">Kehadiran Anda adalah kebahagiaan kami &#10022;</div>
+  </div></div>`;
+
+  let pagesHTML='';
+  for(let i=0;i<names.length;i+=6){
+    pagesHTML+='<div class="print-page">'+names.slice(i,i+6).map(cardHTML).join('')+'</div>';
+  }
+
+  const style=`
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cinzel:wght@400;600;700&family=Amiri&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{background:#f3eefc;font-family:sans-serif;}
+    @page{size:A4;margin:10mm}
+    .print-page{width:190mm;min-height:277mm;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr 1fr;gap:6mm;page-break-after:always;}
+    .print-page:last-child{page-break-after:auto;}
+    .inv-card{border:1px dashed rgba(124,90,170,.4);border-radius:14px;padding:3mm;display:flex;}
+    .inv-card-inner{width:100%;background:linear-gradient(160deg,#ffffff 0%,#f8f3fd 38%,#ead9f7 72%,#dac4ef 100%);border:1px solid rgba(124,90,170,.5);border-radius:12px;padding:6mm 5mm;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:0 2px 10px rgba(124,90,170,.15);page-break-inside:avoid;break-inside:avoid;}
+    .inv-bismillah{font-family:'Amiri',serif;font-size:12px;letter-spacing:.06em;margin-bottom:3.5mm;white-space:nowrap;background:linear-gradient(90deg,#8a6a22 0%,#d4af5a 35%,#f2dba0 50%,#d4af5a 65%,#8a6a22 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;text-shadow:0 0 1px rgba(184,146,63,.25);}
+    .inv-label{font-family:'Cinzel',serif;font-size:6.5px;color:rgba(46,18,80,.5);text-transform:uppercase;letter-spacing:.18em;margin-bottom:2.5mm;}
+    .inv-kepada{font-size:7px;color:rgba(46,18,80,.55);text-transform:uppercase;letter-spacing:.12em;margin-bottom:1.5mm;font-weight:600;}
+    .inv-name{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#2e1250;margin-bottom:1mm;line-height:1.25;max-width:95%;}
+    .inv-family{font-size:7.5px;color:rgba(46,18,80,.5);margin-bottom:3.5mm;font-style:italic;}
+    .inv-crown{font-size:15px;color:#b8923f;margin-bottom:2.5mm;}
+    .inv-couple{font-family:'Playfair Display',serif;font-size:9.5px;font-weight:700;color:#3d1a66;margin-bottom:2.5mm;font-style:italic;}
+    .inv-couple .amp{color:#b8923f;}
+    .inv-msg{font-size:7.3px;color:rgba(46,18,80,.6);line-height:1.65;margin-bottom:3mm;max-width:92%;}
+    .inv-footer{font-size:6.8px;color:#b8923f;font-style:italic;border-top:1px solid rgba(184,146,63,.35);padding-top:2mm;width:80%;}
+    @media print{html,body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.inv-bismillah{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+  `;
+
   const w=window.open('','_blank');if(!w){showMessage('⚠ Pop-up diblokir');return;}
-  w.document.open();w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Undangan</title><style>@import url(\'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cinzel:wght@400;600;700&display=swap\');*{box-sizing:border-box;margin:0;padding:0}body{font-family:sans-serif;background:#0a0612;padding:24px;columns:2;column-gap:16px}@media print{body{background:#0a0612;padding:12px;-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body>'+cards+'</body></html>');
+  w.document.open();w.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Undangan</title><style>'+style+'</style></head><body>'+pagesHTML+'</body></html>');
   w.document.close();setTimeout(()=>w.print(),600);
 }
 
