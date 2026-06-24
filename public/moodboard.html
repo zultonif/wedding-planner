@@ -682,9 +682,15 @@ function showSync(txt, type='') {
 /* ═══════════════════════════════════════════════════════
    DATA LOADING
 ═══════════════════════════════════════════════════════ */
-async function loadMoodboard() {
+async function loadMoodboard(isBackground = false) {
   const grid = document.getElementById('mbGrid');
-  grid.innerHTML = '<div class="mb-loading"><div class="spin"></div><div class="loading-txt">Memuat moodboard...</div></div>';
+  // Hanya tampilkan spinner full-screen kalau ini load PERTAMA KALI (grid masih kosong).
+  // Auto-refresh di background TIDAK BOLEH menghapus foto yang sudah tampil.
+  if (!isBackground) {
+    grid.innerHTML = '<div class="mb-loading"><div class="spin"></div><div class="loading-txt">Memuat moodboard...</div></div>';
+  } else {
+    showSync('Menyegarkan...');
+  }
   try {
     const raw = await mbApi.load();
     // raw = [[header], [row], ...]
@@ -695,8 +701,16 @@ async function loadMoodboard() {
       mbData.push({ id: String(r[0]), type: r[1]||'image', content: r[2]||'', section: r[3]||'Lainnya', title: r[4]||'', note: r[5]||'', createdAt: r[6]||'' });
     }
     renderGrid();
+    if (isBackground) showSync('Tersinkron ✓', 'success');
   } catch(e) {
-    grid.innerHTML = `<div class="mb-empty"><div class="mb-empty-icon">⚠️</div><h3>Gagal memuat</h3><p>${esc(e.message)}<br><button class="m-btn save" style="margin-top:12px" onclick="loadMoodboard()">↺ Coba Lagi</button></p></div>`;
+    if (isBackground) {
+      // Refresh background gagal (misal koneksi/Sheets API lagi lambat) —
+      // JANGAN timpa foto yang sudah tampil dengan layar error. Diamkan, coba lagi 30 detik berikutnya.
+      console.warn('[moodboard] auto-refresh gagal, foto lama tetap ditampilkan:', e.message);
+      showSync('Gagal sinkron ⚠', 'error');
+    } else {
+      grid.innerHTML = `<div class="mb-empty"><div class="mb-empty-icon">⚠️</div><h3>Gagal memuat</h3><p>${esc(e.message)}<br><button class="m-btn save" style="margin-top:12px" onclick="loadMoodboard()">↺ Coba Lagi</button></p></div>`;
+    }
   }
 }
 
@@ -1174,11 +1188,11 @@ document.querySelectorAll('.modal-bg').forEach(bg => {
 ═══════════════════════════════════════════════════════ */
 window.addEventListener('load', () => {
   loadMoodboard();
-  // Auto-refresh every 30 seconds
-  setInterval(loadMoodboard, 30000);
-  // Refresh on visibility change
+  // Auto-refresh every 30 seconds — silent (jangan timpa foto yang sudah tampil)
+  setInterval(() => loadMoodboard(true), 30000);
+  // Refresh on visibility change — silent juga
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') loadMoodboard();
+    if (document.visibilityState === 'visible') loadMoodboard(true);
   });
 });
 </script>
