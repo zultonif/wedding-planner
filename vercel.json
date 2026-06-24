@@ -1,8 +1,5 @@
 {
   "rewrites": [
-    {
-      "source": "/((?!api/|moodboard\\.html$).*)",
-      "destination": "/planner.html"
-    }
+    { "source": "/((?!api/).*)", "destination": "/planner.html" }
   ]
 }
