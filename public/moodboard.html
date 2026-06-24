@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Moodboard — Zultoni & Beska ♛</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#0a0612">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-deep:#0a0612;--bg-mid:#110820;--bg-card:rgba(255,255,255,.042);
+      --border:rgba(255,255,255,.09);--border-gold:rgba(201,163,88,.35);
+      --gold:#c9a358;--gold-l:#e8c97a;--gold-pale:rgba(201,163,88,.12);
+      --rose:#d4a0b0;--violet:#7c5aaa;--violet-mid:#9b7cc8;--violet-pale:rgba(124,90,170,.15);
+      --white:#fff;--text:#e8e0f5;--text-muted:rgba(232,224,245,.5);
+      --danger:#e05c7a;--danger-bg:rgba(224,92,122,.12);--ok:#5cbf8a;
+      --shadow-card:0 8px 32px rgba(0,0,0,.35);--rs:12px;--rx:20px;
+      --toolbar-h:58px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{-webkit-text-size-adjust:100%}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg-deep);color:var(--text);
+      height:100vh;overflow:hidden;display:flex;flex-direction:column}
+
+    /* ══ NOISE + GLOW BACKGROUND ══ */
+    #bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;width:100%;height:100%}
+    body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      background-size:256px 256px;opacity:.5}
+    body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+      background:radial-gradient(ellipse 55% 45% at 10% 15%,rgba(124,90,170,.22) 0%,transparent 60%),
+        radial-gradient(ellipse 45% 55% at 90% 80%,rgba(201,163,88,.12) 0%,transparent 55%),
+        radial-gradient(ellipse 40% 50% at 50% 50%,rgba(212,160,176,.08) 0%,transparent 60%)}
+
+    /* ══ TOOLBAR ══ */
+    .mb-toolbar{
+      position:fixed;top:0;left:0;right:0;z-index:100;
+      height:var(--toolbar-h);
+      display:flex;align-items:center;gap:6px;
+      padding:0 14px;
+      background:rgba(10,6,18,.88);
+      backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+      border-bottom:1px solid var(--border-gold);
+      box-shadow:0 4px 24px rgba(0,0,0,.4);
+    }
+    .tb-logo{
+      display:flex;align-items:center;gap:8px;text-decoration:none;
+      font-family:'Cinzel',serif;font-size:13px;color:var(--gold-l);letter-spacing:.1em;
+      flex-shrink:0;
+    }
+    .tb-logo svg{width:22px;height:22px;opacity:.9}
+    .tb-divider{width:1px;height:28px;background:var(--border);flex-shrink:0;margin:0 2px}
+    .tb-btn{
+      display:inline-flex;align-items:center;gap:5px;
+      border:1px solid var(--border);border-radius:10px;
+      background:rgba(255,255,255,.05);color:var(--text);
+      padding:6px 11px;font-size:11px;font-weight:600;font-family:'DM Sans',sans-serif;
+      cursor:pointer;transition:all .18s;white-space:nowrap;
+      touch-action:manipulation;-webkit-tap-highlight-color:transparent;letter-spacing:.03em;
+    }
+    .tb-btn:hover{background:rgba(255,255,255,.1);border-color:var(--border-gold);color:var(--gold-l)}
+    .tb-btn:active{transform:scale(.97)}
+    .tb-btn.primary{
+      background:linear-gradient(135deg,rgba(201,163,88,.25),rgba(201,163,88,.1));
+      border-color:rgba(201,163,88,.5);color:var(--gold-l);
+    }
+    .tb-btn.primary:hover{box-shadow:0 0 0 1px rgba(201,163,88,.4)}
+    .tb-btn.danger{background:rgba(224,92,122,.12);border-color:rgba(224,92,122,.3);color:var(--danger)}
+    .tb-spacer{flex:1}
+    .tb-search{
+      display:flex;align-items:center;gap:7px;
+      background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:10px;
+      padding:6px 11px;
+    }
+    .tb-search input{
+      background:none;border:none;outline:none;color:var(--text);font-family:'DM Sans',sans-serif;
+      font-size:12px;width:140px;
+    }
+    .tb-search input::placeholder{color:var(--text-muted)}
+    .tb-search svg{width:13px;height:13px;color:var(--text-muted);flex-shrink:0}
+    .back-btn{
+      display:inline-flex;align-items:center;gap:4px;
+      font-size:11px;color:var(--text-muted);text-decoration:none;
+      padding:5px 9px;border-radius:8px;border:1px solid transparent;
+      transition:all .15s;flex-shrink:0;
+    }
+    .back-btn:hover{background:rgba(255,255,255,.06);border-color:var(--border);color:var(--text)}
+
+    /* ══ SECTION FILTER BAR ══ */
+    .section-bar{
+      position:fixed;top:var(--toolbar-h);left:0;right:0;z-index:90;
+      display:flex;gap:6px;align-items:center;
+      padding:8px 14px;overflow-x:auto;
+      background:rgba(10,6,18,.75);backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+      scrollbar-width:none;-ms-overflow-style:none;
+    }
+    .section-bar::-webkit-scrollbar{display:none}
+    .sec-chip{
+      flex-shrink:0;border:1px solid var(--border);border-radius:99px;
+      background:rgba(255,255,255,.04);color:var(--text-muted);
+      padding:4px 13px;font-size:10px;font-weight:600;letter-spacing:.05em;
+      cursor:pointer;transition:all .15s;white-space:nowrap;
+      touch-action:manipulation;
+    }
+    .sec-chip:hover{border-color:var(--border-gold);color:var(--gold-l);background:var(--gold-pale)}
+    .sec-chip.active{
+      background:linear-gradient(135deg,rgba(201,163,88,.2),rgba(124,90,170,.15));
+      border-color:rgba(201,163,88,.5);color:var(--gold-l);
+    }
+    .sec-chip-add{
+      flex-shrink:0;border:1px dashed rgba(201,163,88,.3);border-radius:99px;
+      background:transparent;color:var(--gold);
+      padding:4px 11px;font-size:10px;font-weight:600;cursor:pointer;
+      transition:all .15s;white-space:nowrap;
+    }
+    .sec-chip-add:hover{background:var(--gold-pale);border-color:var(--gold)}
+
+    /* ══ CANVAS AREA ══ */
+    .mb-canvas{
+      position:fixed;left:0;right:0;
+      top:calc(var(--toolbar-h) + 44px);
+      bottom:0;z-index:2;
+      overflow-y:auto;overflow-x:hidden;
+      padding:16px 16px 80px;
+    }
+
+    /* ══ MASONRY GRID ══ */
+    .mb-grid{
+      columns:4 250px;column-gap:14px;
+    }
+    @media(max-width:900px){.mb-grid{columns:3 200px}}
+    @media(max-width:600px){.mb-grid{columns:2 160px}}
+    @media(max-width:400px){.mb-grid{columns:1}}
+
+    /* ══ CARDS ══ */
+    .mb-card{
+      break-inside:avoid;
+      border-radius:16px;margin-bottom:14px;
+      border:1px solid var(--border);
+      background:rgba(255,255,255,.04);
+      overflow:hidden;cursor:pointer;
+      transition:transform .22s,box-shadow .22s,border-color .22s;
+      position:relative;
+    }
+    .mb-card:hover{
+      transform:translateY(-3px);
+      box-shadow:0 12px 40px rgba(0,0,0,.5),0 0 0 1px rgba(201,163,88,.25);
+      border-color:rgba(201,163,88,.35);
+    }
+    .mb-card.entering{animation:card-enter .3s ease forwards}
+    @keyframes card-enter{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+    .mb-card.removing{animation:card-remove .2s ease forwards;pointer-events:none}
+    @keyframes card-remove{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.94)}}
+
+    /* Image card */
+    .mb-img-wrap{position:relative;overflow:hidden}
+    .mb-img{
+      width:100%;display:block;object-fit:cover;
+      transition:transform .35s ease;
+      background:rgba(255,255,255,.05);min-height:80px;
+    }
+    .mb-card:hover .mb-img{transform:scale(1.04)}
+    .mb-img-placeholder{
+      width:100%;min-height:100px;display:flex;align-items:center;justify-content:center;
+      background:rgba(255,255,255,.04);color:var(--text-muted);font-size:28px;
+    }
+    .mb-img-overlay{
+      position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(10,6,18,.85) 100%);
+      opacity:0;transition:opacity .25s;display:flex;align-items:flex-end;padding:12px;gap:6px;
+    }
+    .mb-card:hover .mb-img-overlay{opacity:1}
+    .mb-overlay-btn{
+      border:none;border-radius:8px;cursor:pointer;padding:5px 9px;font-size:10px;font-weight:700;
+      font-family:'DM Sans',sans-serif;letter-spacing:.04em;transition:all .15s;
+      display:inline-flex;align-items:center;gap:4px;
+    }
+    .mb-overlay-btn.view{background:rgba(255,255,255,.85);color:#1a0e00}
+    .mb-overlay-btn.edit{background:rgba(201,163,88,.2);color:var(--gold-l);border:1px solid rgba(201,163,88,.3)}
+    .mb-overlay-btn.del{background:rgba(224,92,122,.15);color:var(--danger);border:1px solid rgba(224,92,122,.3)}
+    .mb-overlay-btn:hover{transform:scale(1.06)}
+
+    /* Image card footer */
+    .mb-img-meta{padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:6px}
+    .mb-sec-badge{
+      font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+      padding:2px 8px;border-radius:99px;
+      background:var(--violet-pale);color:var(--violet-mid);border:1px solid rgba(124,90,170,.25);
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;
+    }
+    .mb-img-actions{display:flex;gap:4px}
+    .mb-action-btn{
+      background:none;border:none;cursor:pointer;color:var(--text-muted);
+      padding:3px 5px;border-radius:6px;font-size:13px;transition:all .15s;
+      touch-action:manipulation;
+    }
+    .mb-action-btn:hover.view{color:var(--gold)}
+    .mb-action-btn:hover.edit{color:var(--violet-mid)}
+    .mb-action-btn:hover.del{color:var(--danger)}
+
+    /* Text card */
+    .mb-text-card{padding:18px 16px}
+    .mb-text-sec{
+      font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+      color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:6px;
+    }
+    .mb-text-sec::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border-gold),transparent)}
+    .mb-text-title{
+      font-family:'Playfair Display',serif;font-size:15px;font-weight:600;
+      color:var(--white);margin-bottom:6px;line-height:1.35;
+    }
+    .mb-text-note{font-size:12px;color:var(--text-muted);line-height:1.65;margin-bottom:12px}
+    .mb-text-actions{display:flex;gap:6px}
+    .mb-text-btn{
+      border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.05);
+      color:var(--text-muted);padding:4px 9px;font-size:10px;font-weight:600;
+      cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;
+      display:inline-flex;align-items:center;gap:4px;
+    }
+    .mb-text-btn:hover.edit{border-color:rgba(201,163,88,.4);color:var(--gold-l);background:var(--gold-pale)}
+    .mb-text-btn:hover.del{border-color:rgba(224,92,122,.35);color:var(--danger);background:var(--danger-bg)}
+
+    /* ══ EMPTY STATE ══ */
+    .mb-empty{
+      text-align:center;padding:80px 20px;
+      display:flex;flex-direction:column;align-items:center;gap:16px;
+    }
+    .mb-empty-icon{font-size:64px;opacity:.3;animation:bob 5s ease-in-out infinite}
+    @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+    .mb-empty h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--text-muted)}
+    .mb-empty p{font-size:13px;color:var(--text-muted);opacity:.7;max-width:280px;line-height:1.7}
+
+    /* ══ LOADING ══ */
+    .mb-loading{display:flex;align-items:center;justify-content:center;padding:60px 20px;
+      flex-direction:column;gap:16px}
+    .spin{width:36px;height:36px;border:2px solid var(--border);border-top-color:var(--gold);
+      border-radius:50%;animation:spin .8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .loading-txt{font-size:12px;color:var(--text-muted);letter-spacing:.06em}
+
+    /* ══ UPLOAD ZONE (drag & drop) ══ */
+    .upload-zone{
+      border:2px dashed rgba(201,163,88,.3);border-radius:16px;
+      padding:30px 20px;text-align:center;
+      background:rgba(201,163,88,.03);cursor:pointer;
+      transition:all .2s;margin-bottom:20px;position:relative;
+      display:none; /* hidden until multi-upload modal shown */
+    }
+    .upload-zone:hover,.upload-zone.drag-over{
+      background:rgba(201,163,88,.07);border-color:var(--gold);
+    }
+    .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .upload-zone-icon{font-size:36px;margin-bottom:10px;display:block}
+    .upload-zone-text{font-size:13px;color:var(--text-muted)}
+    .upload-zone-text strong{color:var(--gold-l);display:block;font-size:15px;margin-bottom:4px}
+
+    /* ══ TOAST ══ */
+    #mbToast{
+      display:none;position:fixed;top:70px;left:50%;transform:translateX(-50%);
+      background:rgba(10,6,18,.92);backdrop-filter:blur(16px);
+      color:var(--gold-l);padding:10px 22px;border-radius:99px;font-size:12px;
+      z-index:9999;border:1px solid var(--border-gold);box-shadow:0 8px 32px rgba(0,0,0,.4);
+      white-space:nowrap;animation:toast-in .3s ease;
+    }
+    @keyframes toast-in{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+
+    /* ══ SYNC INDICATOR ══ */
+    .mb-sync{
+      display:none;position:fixed;bottom:20px;right:16px;z-index:200;
+      background:rgba(10,6,18,.92);backdrop-filter:blur(16px);
+      border:1px solid var(--border-gold);border-radius:99px;
+      padding:5px 13px;font-size:10px;color:var(--gold-l);
+      gap:6px;align-items:center;font-weight:600;letter-spacing:.05em;
+    }
+    .mb-sync.show{display:flex}
+    .mb-sync.success{border-color:rgba(92,191,138,.4);color:var(--ok)}
+    .mb-sync.error{border-color:rgba(224,92,122,.4);color:var(--danger)}
+    .sync-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse-dot 1s ease-in-out infinite}
+    .mb-sync.success .sync-dot{background:var(--ok);animation:none}
+    .mb-sync.error .sync-dot{background:var(--danger);animation:none}
+    @keyframes pulse-dot{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
+
+    /* ══ MODAL BASE ══ */
+    .modal-bg{
+      display:none;position:fixed;inset:0;z-index:500;
+      background:rgba(5,3,12,.85);backdrop-filter:blur(8px);
+      align-items:center;justify-content:center;padding:16px;
+    }
+    .modal-bg.open{display:flex;animation:bg-fade .2s ease}
+    @keyframes bg-fade{from{opacity:0}to{opacity:1}}
+    .modal{
+      background:rgba(17,8,32,.95);border:1px solid var(--border-gold);
+      border-radius:20px;padding:28px;width:100%;max-width:480px;
+      box-shadow:0 20px 60px rgba(0,0,0,.6);
+      animation:modal-in .25s ease;max-height:90vh;overflow-y:auto;
+    }
+    @keyframes modal-in{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .modal h3{font-family:'Playfair Display',serif;font-size:18px;color:var(--white);margin-bottom:18px}
+    .modal-field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+    .modal-field label{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);font-weight:600}
+    .modal-field input,.modal-field textarea,.modal-field select{
+      border:1px solid var(--border);border-radius:10px;
+      padding:10px 13px;font-family:'DM Sans',sans-serif;font-size:13px;
+      color:var(--text);background:rgba(255,255,255,.05);outline:none;
+      transition:border-color .15s;width:100%;
+    }
+    .modal-field textarea{min-height:80px;resize:vertical;line-height:1.6}
+    .modal-field input::placeholder,.modal-field textarea::placeholder{color:var(--text-muted)}
+    .modal-field input:focus,.modal-field textarea:focus,.modal-field select:focus{border-color:rgba(201,163,88,.5);background:rgba(255,255,255,.08)}
+    .modal-field select option{background:#1a0e2e}
+    .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+    .m-btn{
+      border:none;border-radius:10px;cursor:pointer;padding:9px 18px;font-size:12px;
+      font-weight:600;font-family:'DM Sans',sans-serif;transition:all .15s;
+    }
+    .m-btn.cancel{background:rgba(255,255,255,.07);color:var(--text);border:1px solid var(--border)}
+    .m-btn.cancel:hover{background:rgba(255,255,255,.12)}
+    .m-btn.save{background:linear-gradient(135deg,var(--gold),#d4a050);color:#1a0e00;box-shadow:0 4px 16px rgba(201,163,88,.3)}
+    .m-btn.save:hover{box-shadow:0 6px 24px rgba(201,163,88,.5)}
+    .m-btn.save:disabled{opacity:.5;cursor:not-allowed}
+
+    /* ══ UPLOAD MODAL ══ */
+    .upload-modal-zone{
+      border:2px dashed rgba(201,163,88,.35);border-radius:14px;
+      padding:28px 20px;text-align:center;background:rgba(201,163,88,.03);
+      cursor:pointer;transition:all .2s;position:relative;margin-bottom:16px;
+    }
+    .upload-modal-zone:hover,.upload-modal-zone.drag-over{background:rgba(201,163,88,.08);border-color:var(--gold)}
+    .upload-modal-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .upl-icon-big{font-size:40px;display:block;margin-bottom:10px;opacity:.7}
+    .upl-hint{font-size:12px;color:var(--text-muted);line-height:1.7}
+    .upl-hint strong{color:var(--gold-l);font-size:14px;display:block;margin-bottom:4px}
+
+    /* Upload queue */
+    .upl-queue{max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
+    .upl-item{
+      display:flex;align-items:center;gap:10px;
+      background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;
+      padding:8px 12px;font-size:11px;color:var(--text-muted);
+    }
+    .upl-item-icon{font-size:18px;flex-shrink:0}
+    .upl-item-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+    .upl-item-size{font-size:10px;flex-shrink:0;color:var(--text-muted)}
+    .upl-item-status{flex-shrink:0;font-size:12px;min-width:20px;text-align:center}
+    .upl-item-bar{height:2px;background:rgba(255,255,255,.08);border-radius:99px;margin-top:4px}
+    .upl-item-prog{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--rose));transition:width .3s;width:0}
+    .upl-wrap{flex:1;min-width:0}
+    .upl-sec-select{
+      border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:11px;
+      color:var(--text);background:rgba(255,255,255,.05);outline:none;width:100%;margin-top:12px;
+      font-family:'DM Sans',sans-serif;
+    }
+    .upl-sec-select option{background:#1a0e2e}
+
+    /* ══ LIGHTBOX ══ */
+    .lb-bg{
+      display:none;position:fixed;inset:0;z-index:800;
+      background:rgba(3,1,10,.96);backdrop-filter:blur(20px);
+      align-items:center;justify-content:center;flex-direction:column;gap:14px;
+    }
+    .lb-bg.open{display:flex}
+    .lb-img-wrap{max-width:92vw;max-height:82vh;position:relative}
+    .lb-img{max-width:100%;max-height:82vh;border-radius:12px;object-fit:contain;display:block;box-shadow:0 20px 60px rgba(0,0,0,.8)}
+    .lb-close{
+      position:fixed;top:16px;right:16px;background:rgba(255,255,255,.12);border:1px solid var(--border);
+      border-radius:50%;width:36px;height:36px;font-size:16px;color:var(--text);cursor:pointer;
+      display:flex;align-items:center;justify-content:center;transition:all .15s;z-index:810;
+    }
+    .lb-close:hover{background:rgba(255,255,255,.2);color:var(--white)}
+    .lb-spin{width:40px;height:40px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+    .lb-meta{font-size:12px;color:var(--text-muted);text-align:center}
+
+    /* ══ EXPORT PROGRESS ══ */
+    .export-overlay{
+      display:none;position:fixed;inset:0;z-index:900;
+      background:rgba(5,3,12,.88);backdrop-filter:blur(6px);
+      align-items:center;justify-content:center;flex-direction:column;gap:14px;
+    }
+    .export-overlay.show{display:flex}
+    .export-msg{font-size:14px;color:var(--text-muted);font-weight:600}
+
+    /* ══ FAB upload shortcut ══ */
+    .mb-fab{
+      position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:200;
+      background:linear-gradient(135deg,var(--gold),#b8913a);color:#1a0e00;
+      border:none;border-radius:99px;padding:11px 22px;font-size:13px;font-weight:700;
+      font-family:'DM Sans',sans-serif;cursor:pointer;
+      box-shadow:0 8px 28px rgba(201,163,88,.45);
+      display:flex;align-items:center;gap:8px;
+      transition:all .2s;touch-action:manipulation;
+    }
+    .mb-fab:hover{box-shadow:0 12px 36px rgba(201,163,88,.6);transform:translateX(-50%) translateY(-2px)}
+    .mb-fab:active{transform:translateX(-50%) scale(.97)}
+
+    /* ══ SCROLLBAR ══ */
+    .mb-canvas::-webkit-scrollbar{width:4px}
+    .mb-canvas::-webkit-scrollbar-track{background:transparent}
+    .mb-canvas::-webkit-scrollbar-thumb{background:rgba(201,163,88,.2);border-radius:99px}
+
+    /* ══ SECTION COLOR DOTS ══ */
+    .dot-venue{background:#6d8ccc;color:#fff}
+    .dot-dekorasi{background:#b87c8a;color:#fff}
+    .dot-dress{background:#9b7cc8;color:#fff}
+    .dot-makeup{background:#c48a5a;color:#fff}
+    .dot-catering{background:#5caa7a;color:#fff}
+    .dot-souvenir{background:#c9a358;color:#1a0e00}
+    .dot-dokumentasi{background:#4a9aab;color:#fff}
+    .dot-prewedding{background:#a05caa;color:#fff}
+    .dot-lainnya{background:rgba(255,255,255,.15);color:#c8b8e0}
+
+    /* ══ RESPONSIVE ══ */
+    @media(max-width:600px){
+      .tb-search{display:none}
+      .tb-btn span{display:none}
+      .tb-btn{padding:6px 9px}
+      .tb-logo span{display:none}
+      .mb-fab{padding:10px 18px;font-size:12px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOOLBAR -->
+<header class="mb-toolbar" id="toolbar">
+  <a href="/planner.html" class="back-btn" title="Kembali ke Planner">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+    <span>Planner</span>
+  </a>
+  <div class="tb-divider"></div>
+  <a href="/planner.html" class="tb-logo" title="Wedding Planner">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+    </svg>
+    <span>Z & B ♛</span>
+  </a>
+  <div class="tb-divider"></div>
+
+  <!-- Upload Photos -->
+  <button class="tb-btn primary" onclick="openUploadModal()" title="Upload foto">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+    </svg>
+    <span>Upload Foto</span>
+  </button>
+
+  <!-- Add Text Card -->
+  <button class="tb-btn" onclick="openTextModal()" title="Tambah teks">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+    </svg>
+    <span>Add Text</span>
+  </button>
+
+  <div class="tb-spacer"></div>
+
+  <!-- Search -->
+  <div class="tb-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input type="text" id="searchInput" placeholder="Cari moodboard..." oninput="filterMoodboard()">
+  </div>
+
+  <!-- Export -->
+  <button class="tb-btn" onclick="exportMoodboard()" title="Export">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+    <span>Export</span>
+  </button>
+</header>
+
+<!-- SECTION FILTER BAR -->
+<div class="section-bar" id="sectionBar">
+  <button class="sec-chip active" data-sec="all" onclick="filterSection('all')">✨ Semua</button>
+  <button class="sec-chip" data-sec="Venue" onclick="filterSection('Venue')">🏛 Venue</button>
+  <button class="sec-chip" data-sec="Dekorasi" onclick="filterSection('Dekorasi')">🌸 Dekorasi</button>
+  <button class="sec-chip" data-sec="Dress" onclick="filterSection('Dress')">👗 Dress</button>
+  <button class="sec-chip" data-sec="Makeup" onclick="filterSection('Makeup')">💄 Makeup</button>
+  <button class="sec-chip" data-sec="Catering" onclick="filterSection('Catering')">🍽 Catering</button>
+  <button class="sec-chip" data-sec="Souvenir" onclick="filterSection('Souvenir')">🎁 Souvenir</button>
+  <button class="sec-chip" data-sec="Dokumentasi" onclick="filterSection('Dokumentasi')">📸 Dokumentasi</button>
+  <button class="sec-chip" data-sec="Prewedding" onclick="filterSection('Prewedding')">💑 Prewedding</button>
+  <button class="sec-chip-add" onclick="addCustomSection()">＋ Kategori Baru</button>
+</div>
+
+<!-- CANVAS -->
+<main class="mb-canvas" id="mbCanvas">
+  <div id="mbGrid" class="mb-grid"></div>
+</main>
+
+<!-- FAB UPLOAD -->
+<button class="mb-fab" onclick="openUploadModal()">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+  Upload Foto
+</button>
+
+<!-- TOAST -->
+<div id="mbToast"></div>
+
+<!-- SYNC -->
+<div class="mb-sync" id="mbSync">
+  <div class="sync-dot"></div>
+  <span id="mbSyncTxt">Menyimpan...</span>
+</div>
+
+<!-- ══ UPLOAD MODAL ══ -->
+<div class="modal-bg" id="uploadModal">
+  <div class="modal" style="max-width:520px">
+    <h3>📸 Upload Foto Moodboard</h3>
+    <div class="upload-modal-zone" id="uploadZone">
+      <input type="file" accept="image/*" multiple id="uploadFileInput" onchange="handleFileSelect(this.files)">
+      <span class="upl-icon-big">🖼️</span>
+      <div class="upl-hint">
+        <strong>Pilih atau drag foto ke sini</strong>
+        JPG, PNG, WEBP, GIF — multiple files — Maks 50MB per foto
+      </div>
+    </div>
+    <div id="uplQueue" class="upl-queue" style="margin-bottom:12px"></div>
+    <div class="modal-field">
+      <label>Kategori Section</label>
+      <select id="uplSection" class="upl-sec-select">
+        <option value="Lainnya">— Pilih Kategori —</option>
+        <option value="Venue">🏛 Venue</option>
+        <option value="Dekorasi">🌸 Dekorasi</option>
+        <option value="Dress">👗 Dress</option>
+        <option value="Makeup">💄 Makeup</option>
+        <option value="Catering">🍽 Catering</option>
+        <option value="Souvenir">🎁 Souvenir</option>
+        <option value="Dokumentasi">📸 Dokumentasi</option>
+        <option value="Prewedding">💑 Prewedding</option>
+        <option value="Lainnya">✨ Lainnya</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="m-btn cancel" onclick="closeUploadModal()">Batal</button>
+      <button class="m-btn save" id="uplStartBtn" onclick="startUpload()" disabled>
+        Upload ↑
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TEXT CARD MODAL ══ -->
+<div class="modal-bg" id="textModal">
+  <div class="modal">
+    <h3 id="textModalTitle">✏️ Tambah Catatan</h3>
+    <div class="modal-field">
+      <label>Judul</label>
+      <input type="text" id="txtTitle" placeholder="Contoh: Tema Rustic Modern">
+    </div>
+    <div class="modal-field">
+      <label>Catatan</label>
+      <textarea id="txtNote" placeholder="Dominan putih, cream, gold. Dekorasi bunga baby breath..."></textarea>
+    </div>
+    <div class="modal-field">
+      <label>Section</label>
+      <select id="txtSection">
+        <option value="Lainnya">— Pilih Kategori —</option>
+        <option value="Venue">🏛 Venue</option>
+        <option value="Dekorasi">🌸 Dekorasi</option>
+        <option value="Dress">👗 Dress</option>
+        <option value="Makeup">💄 Makeup</option>
+        <option value="Catering">🍽 Catering</option>
+        <option value="Souvenir">🎁 Souvenir</option>
+        <option value="Dokumentasi">📸 Dokumentasi</option>
+        <option value="Prewedding">💑 Prewedding</option>
+        <option value="Lainnya">✨ Lainnya</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="m-btn cancel" onclick="closeTextModal()">Batal</button>
+      <button class="m-btn save" id="txtSaveBtn" onclick="saveTextCard()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ EDIT IMAGE MODAL ══ -->
+<div class="modal-bg" id="editImgModal">
+  <div class="modal">
+    <h3>✏️ Edit Foto</h3>
+    <input type="hidden" id="editImgId">
+    <div class="modal-field">
+      <label>Section</label>
+      <select id="editImgSection">
+        <option value="Venue">🏛 Venue</option>
+        <option value="Dekorasi">🌸 Dekorasi</option>
+        <option value="Dress">👗 Dress</option>
+        <option value="Makeup">💄 Makeup</option>
+        <option value="Catering">🍽 Catering</option>
+        <option value="Souvenir">🎁 Souvenir</option>
+        <option value="Dokumentasi">📸 Dokumentasi</option>
+        <option value="Prewedding">💑 Prewedding</option>
+        <option value="Lainnya">✨ Lainnya</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="m-btn cancel" onclick="document.getElementById('editImgModal').classList.remove('open')">Batal</button>
+      <button class="m-btn save" onclick="saveEditImg()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LIGHTBOX ══ -->
+<div class="lb-bg" id="lightbox">
+  <button class="lb-close" onclick="closeLightbox()">✕</button>
+  <div class="lb-img-wrap" id="lbContent">
+    <div class="lb-spin" id="lbSpin"></div>
+    <img id="lbImg" class="lb-img" style="display:none" onclick="closeLightbox()">
+  </div>
+  <p class="lb-meta" id="lbMeta"></p>
+</div>
+
+<!-- ══ EXPORT OVERLAY ══ -->
+<div class="export-overlay" id="exportOverlay">
+  <div class="spin" style="width:48px;height:48px"></div>
+  <div class="export-msg" id="exportMsg">Menyiapkan export...</div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════
+   MOODBOARD — Core State & API
+═══════════════════════════════════════════════════════ */
+let mbData = [];          // [{id,type,content,section,title,note,createdAt}]
+let activeSection = 'all';
+let searchQuery = '';
+let uploadQueue = [];     // File objects pending upload
+let editingTextId = null; // null = new, string = edit mode
+const urlCache = {};      // key → {url, exp}
+
+// API helpers
+async function apicall(url, method, body) {
+  const opts = { method: method || 'GET', headers: { 'Content-Type': 'application/json' } };
+  if (body && method !== 'GET') opts.body = JSON.stringify(body);
+  const res = await fetch(url, opts);
+  const json = await res.json();
+  if (!json.success && json.error) throw new Error(json.error);
+  return json;
+}
+
+const mbApi = {
+  load:   ()          => apicall('/api/moodboard').then(r => r.data),
+  add:    (d)         => apicall('/api/moodboard', 'POST', d).then(r => r.id),
+  del:    (id)        => apicall('/api/moodboard', 'DELETE', { id }),
+  patch:  (id,f,v)   => apicall('/api/moodboard', 'PATCH', { id, field: f, value: v }),
+  presign:(n,t,s)    => apicall('/api/moodboard-presign', 'POST', { fileName: n, fileType: t, fileSize: s }),
+  view:   (key)      => apicall('/api/moodboard-view?key=' + encodeURIComponent(key)).then(r => r.url),
+  delFile:(key)      => apicall('/api/moodboard-delete', 'DELETE', { key }),
+};
+
+// Toast
+let toastT;
+function toast(txt, dur=3000) {
+  const el = document.getElementById('mbToast');
+  el.textContent = txt; el.style.display = 'block';
+  clearTimeout(toastT); toastT = setTimeout(() => el.style.display = 'none', dur);
+}
+
+// Sync indicator
+let syncT;
+function showSync(txt, type='') {
+  const el = document.getElementById('mbSync');
+  const t  = document.getElementById('mbSyncTxt');
+  t.textContent = txt;
+  el.className = 'mb-sync show' + (type ? ' ' + type : '');
+  clearTimeout(syncT);
+  if (type === 'success' || type === 'error') {
+    syncT = setTimeout(() => el.classList.remove('show'), 2000);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   DATA LOADING
+═══════════════════════════════════════════════════════ */
+async function loadMoodboard() {
+  const grid = document.getElementById('mbGrid');
+  grid.innerHTML = '<div class="mb-loading"><div class="spin"></div><div class="loading-txt">Memuat moodboard...</div></div>';
+  try {
+    const raw = await mbApi.load();
+    // raw = [[header], [row], ...]
+    mbData = [];
+    for (let i = 1; i < raw.length; i++) {
+      const r = raw[i];
+      if (!r[0]) continue;
+      mbData.push({ id: String(r[0]), type: r[1]||'image', content: r[2]||'', section: r[3]||'Lainnya', title: r[4]||'', note: r[5]||'', createdAt: r[6]||'' });
+    }
+    renderGrid();
+  } catch(e) {
+    grid.innerHTML = `<div class="mb-empty"><div class="mb-empty-icon">⚠️</div><h3>Gagal memuat</h3><p>${esc(e.message)}<br><button class="m-btn save" style="margin-top:12px" onclick="loadMoodboard()">↺ Coba Lagi</button></p></div>`;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RENDER GRID
+═══════════════════════════════════════════════════════ */
+function getFiltered() {
+  const q = searchQuery.toLowerCase();
+  return mbData.filter(item => {
+    const secMatch = activeSection === 'all' || item.section === activeSection;
+    const qMatch = !q || (item.title||'').toLowerCase().includes(q) || (item.note||'').toLowerCase().includes(q) || (item.section||'').toLowerCase().includes(q);
+    return secMatch && qMatch;
+  });
+}
+
+function renderGrid() {
+  const grid = document.getElementById('mbGrid');
+  const items = getFiltered();
+  if (!items.length) {
+    grid.innerHTML = `<div class="mb-empty">
+      <div class="mb-empty-icon">${activeSection==='all'?'🖼️':'📂'}</div>
+      <h3>${activeSection==='all' && !searchQuery ? 'Moodboard Kosong' : 'Tidak Ditemukan'}</h3>
+      <p>${activeSection==='all' && !searchQuery ? 'Mulai dengan upload foto atau tambah catatan inspirasi.' : 'Coba ubah filter atau kata kunci pencarian.'}</p>
+      ${activeSection==='all' && !searchQuery ? '<button class="m-btn save" onclick="openUploadModal()" style="margin-top:8px">📸 Upload Foto Pertama</button>' : ''}
+    </div>`;
+    return;
+  }
+  grid.innerHTML = items.map(item => item.type === 'image' ? buildImgCard(item) : buildTextCard(item)).join('');
+
+  // Lazy-load images
+  lazyLoadImages();
+}
+
+function buildImgCard(item) {
+  const secClass = 'dot-' + (item.section||'lainnya').toLowerCase().replace(/ /g,'');
+  return `<div class="mb-card" id="mbc-${item.id}">
+    <div class="mb-img-wrap">
+      <img class="mb-img" id="img-${item.id}"
+        data-key="${esc(item.content)}"
+        src="" style="min-height:120px;background:rgba(255,255,255,.04)"
+        loading="lazy" alt="${esc(item.section)}">
+      <div class="mb-img-overlay">
+        <button class="mb-overlay-btn view" onclick="event.stopPropagation();openLightbox('${item.id}')">🔍 Lihat</button>
+        <button class="mb-overlay-btn edit" onclick="event.stopPropagation();openEditImg('${item.id}')">✏️</button>
+        <button class="mb-overlay-btn del" onclick="event.stopPropagation();delItem('${item.id}','${esc(item.content)}')">🗑</button>
+      </div>
+    </div>
+    <div class="mb-img-meta">
+      <span class="mb-sec-badge ${secClass}">${esc(item.section||'Lainnya')}</span>
+      <div class="mb-img-actions">
+        <button class="mb-action-btn view" onclick="openLightbox('${item.id}')" title="Lihat">🔍</button>
+        <button class="mb-action-btn edit" onclick="openEditImg('${item.id}')" title="Edit">✏️</button>
+        <button class="mb-action-btn del" onclick="delItem('${item.id}','${esc(item.content)}')" title="Hapus">🗑</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildTextCard(item) {
+  const secClass = 'dot-' + (item.section||'lainnya').toLowerCase().replace(/ /g,'');
+  return `<div class="mb-card" id="mbc-${item.id}">
+    <div class="mb-text-card">
+      <div class="mb-text-sec ${secClass}" style="border-radius:99px;padding:2px 10px;display:inline-flex;align-items:center;gap:6px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">${esc(item.section||'Lainnya')}</div>
+      ${item.title ? `<div class="mb-text-title">${esc(item.title)}</div>` : ''}
+      ${item.note  ? `<div class="mb-text-note">${esc(item.note).replace(/\n/g,'<br>')}</div>` : ''}
+      <div class="mb-text-actions">
+        <button class="mb-text-btn edit" onclick="openEditText('${item.id}')">✏️ Edit</button>
+        <button class="mb-text-btn del" onclick="delItem('${item.id}',null)">🗑 Hapus</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+/* ═══════════════════════════════════════════════════════
+   LAZY LOAD IMAGES
+═══════════════════════════════════════════════════════ */
+async function getViewUrl(key) {
+  const cached = urlCache[key];
+  if (cached && Date.now() < cached.exp) return cached.url;
+  try {
+    const url = await mbApi.view(key);
+    urlCache[key] = { url, exp: Date.now() + 110 * 60 * 1000 }; // cache 110 min (URL valid 2h)
+    return url;
+  } catch(e) { return null; }
+}
+
+function lazyLoadImages() {
+  const imgs = document.querySelectorAll('img.mb-img[data-key]');
+  const obs = new IntersectionObserver(async (entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      const img = entry.target;
+      const key = img.dataset.key;
+      if (!key || img.src) { obs.unobserve(img); continue; }
+      obs.unobserve(img);
+      const url = await getViewUrl(key);
+      if (url) img.src = url;
+      else img.style.background = 'rgba(224,92,122,.1)';
+    }
+  }, { rootMargin: '200px' });
+  imgs.forEach(img => obs.observe(img));
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION FILTER
+═══════════════════════════════════════════════════════ */
+function filterSection(sec) {
+  activeSection = sec;
+  document.querySelectorAll('.sec-chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.sec === sec);
+  });
+  renderGrid();
+}
+
+function filterMoodboard() {
+  searchQuery = document.getElementById('searchInput').value;
+  renderGrid();
+}
+
+function addCustomSection() {
+  const name = prompt('Nama kategori baru:');
+  if (!name || !name.trim()) return;
+  const n = name.trim();
+  const bar = document.getElementById('sectionBar');
+  // Add chip
+  const chip = document.createElement('button');
+  chip.className = 'sec-chip';
+  chip.dataset.sec = n;
+  chip.textContent = n;
+  chip.onclick = () => filterSection(n);
+  bar.insertBefore(chip, bar.querySelector('.sec-chip-add'));
+  // Add to selects
+  ['uplSection','txtSection','editImgSection'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (sel) {
+      const opt = document.createElement('option');
+      opt.value = n; opt.textContent = n;
+      sel.appendChild(opt);
+    }
+  });
+  filterSection(n);
+}
+
+/* ═══════════════════════════════════════════════════════
+   UPLOAD FLOW
+═══════════════════════════════════════════════════════ */
+function openUploadModal() {
+  uploadQueue = [];
+  document.getElementById('uplQueue').innerHTML = '';
+  document.getElementById('uploadFileInput').value = '';
+  document.getElementById('uplStartBtn').disabled = true;
+  document.getElementById('uploadModal').classList.add('open');
+}
+function closeUploadModal() {
+  document.getElementById('uploadModal').classList.remove('open');
+}
+
+// Drag & drop on upload zone
+const zone = document.getElementById('uploadZone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('drag-over');
+  handleFileSelect(e.dataTransfer.files);
+});
+
+function handleFileSelect(files) {
+  const allowed = ['image/jpeg','image/png','image/webp','image/gif','image/heic','image/heif'];
+  const MAX = 50 * 1024 * 1024;
+  uploadQueue = [];
+  const queue = document.getElementById('uplQueue');
+  queue.innerHTML = '';
+  const arr = Array.from(files);
+  arr.forEach((f, i) => {
+    if (!allowed.includes(f.type) && !f.type.startsWith('image/')) {
+      toast('⚠ Hanya gambar yang diterima: ' + f.name); return;
+    }
+    if (f.size > MAX) { toast('⚠ Maks 50MB per foto: ' + f.name); return; }
+    uploadQueue.push(f);
+    const item = document.createElement('div');
+    item.className = 'upl-item';
+    item.id = 'uq-' + i;
+    item.innerHTML = `<div class="upl-item-icon">🖼️</div>
+      <div class="upl-wrap">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+          <span class="upl-item-name">${esc(f.name)}</span>
+          <span class="upl-item-size">${(f.size/1024/1024).toFixed(1)} MB</span>
+          <span class="upl-item-status" id="uqs-${i}">⏳</span>
+        </div>
+        <div class="upl-item-bar"><div class="upl-item-prog" id="uqp-${i}"></div></div>
+      </div>`;
+    queue.appendChild(item);
+  });
+  document.getElementById('uplStartBtn').disabled = uploadQueue.length === 0;
+}
+
+async function startUpload() {
+  if (!uploadQueue.length) return;
+  const section = document.getElementById('uplSection').value || 'Lainnya';
+  const btn = document.getElementById('uplStartBtn');
+  btn.disabled = true;
+  btn.textContent = 'Mengupload...';
+  showSync('Mengupload foto...');
+  let ok = 0, fail = 0;
+
+  for (let i = 0; i < uploadQueue.length; i++) {
+    const f = uploadQueue[i];
+    const setStatus = (s) => { const el = document.getElementById('uqs-'+i); if(el) el.textContent = s; };
+    const setProg = (p) => { const el = document.getElementById('uqp-'+i); if(el) el.style.width = p+'%'; };
+
+    try {
+      setStatus('⏳'); setProg(5);
+      // 1) Get presigned URL
+      const presign = await mbApi.presign(f.name, f.type, f.size);
+      setProg(10);
+
+      // 2) PUT directly to B2
+      await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('PUT', presign.uploadUrl);
+        xhr.setRequestHeader('Content-Type', f.type);
+        xhr.upload.onprogress = e => { if(e.lengthComputable) setProg(10 + Math.round(e.loaded/e.total*80)); };
+        xhr.onerror = () => reject(new Error('Koneksi gagal'));
+        xhr.timeout = 300000;
+        xhr.ontimeout = () => reject(new Error('Upload timeout'));
+        xhr.onload = () => xhr.status>=200&&xhr.status<300 ? resolve() : reject(new Error('Upload gagal status '+xhr.status));
+        xhr.send(f);
+      });
+      setProg(92);
+
+      // 3) Save to moodboard sheet
+      const id = await mbApi.add({ type: 'image', content: presign.key, section, title: '', note: '' });
+      setProg(100); setStatus('✅');
+      ok++;
+
+      // Add to local state and render card
+      mbData.unshift({ id: String(id), type: 'image', content: presign.key, section, title: '', note: '', createdAt: new Date().toISOString() });
+
+    } catch(e) {
+      setStatus('❌'); fail++;
+      console.error('[upload]', f.name, e);
+    }
+  }
+
+  uploadQueue = [];
+  btn.textContent = 'Upload ↑';
+
+  if (ok) {
+    showSync('Tersimpan ✓', 'success');
+    toast('✅ ' + ok + ' foto berhasil diupload' + (fail?' — '+fail+' gagal':''));
+    setTimeout(() => { closeUploadModal(); renderGrid(); }, 1000);
+  } else {
+    btn.disabled = false;
+    showSync('Gagal ⚠', 'error');
+    toast('❌ Gagal upload semua foto');
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   TEXT CARD
+═══════════════════════════════════════════════════════ */
+function openTextModal(id=null) {
+  editingTextId = id;
+  const t = document.getElementById('textModalTitle');
+  const item = id ? mbData.find(m=>m.id===id) : null;
+  t.textContent = id ? '✏️ Edit Catatan' : '✏️ Tambah Catatan';
+  document.getElementById('txtTitle').value = item ? (item.title||'') : '';
+  document.getElementById('txtNote').value  = item ? (item.note||'')  : '';
+  document.getElementById('txtSection').value = item ? (item.section||'Lainnya') : 'Lainnya';
+  document.getElementById('textModal').classList.add('open');
+}
+function closeTextModal() {
+  document.getElementById('textModal').classList.remove('open');
+  editingTextId = null;
+}
+
+async function saveTextCard() {
+  const title   = document.getElementById('txtTitle').value.trim();
+  const note    = document.getElementById('txtNote').value.trim();
+  const section = document.getElementById('txtSection').value || 'Lainnya';
+  if (!title && !note) { toast('⚠ Judul atau catatan harus diisi'); return; }
+  const btn = document.getElementById('txtSaveBtn');
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+  showSync('Menyimpan catatan...');
+  try {
+    if (editingTextId) {
+      await mbApi.patch(editingTextId, 'title', title);
+      await mbApi.patch(editingTextId, 'note', note);
+      await mbApi.patch(editingTextId, 'section', section);
+      const item = mbData.find(m=>m.id===editingTextId);
+      if (item) { item.title=title; item.note=note; item.section=section; }
+      showSync('Tersimpan ✓','success');
+      toast('✅ Catatan diperbarui');
+    } else {
+      const id = await mbApi.add({ type:'text', content:title, section, title, note });
+      mbData.unshift({ id:String(id), type:'text', content:title, section, title, note, createdAt:new Date().toISOString() });
+      showSync('Tersimpan ✓','success');
+      toast('✅ Catatan ditambahkan');
+    }
+    closeTextModal(); renderGrid();
+  } catch(e) {
+    showSync('Gagal ⚠','error');
+    toast('❌ '+e.message);
+  }
+  btn.disabled = false; btn.textContent = 'Simpan';
+}
+
+function openEditText(id) { openTextModal(id); }
+
+/* ═══════════════════════════════════════════════════════
+   EDIT IMAGE (section only)
+═══════════════════════════════════════════════════════ */
+function openEditImg(id) {
+  const item = mbData.find(m=>m.id===id);
+  if (!item) return;
+  document.getElementById('editImgId').value = id;
+  document.getElementById('editImgSection').value = item.section || 'Lainnya';
+  document.getElementById('editImgModal').classList.add('open');
+}
+async function saveEditImg() {
+  const id      = document.getElementById('editImgId').value;
+  const section = document.getElementById('editImgSection').value;
+  showSync('Menyimpan...');
+  try {
+    await mbApi.patch(id, 'section', section);
+    const item = mbData.find(m=>m.id===id);
+    if (item) item.section = section;
+    showSync('Tersimpan ✓','success');
+    toast('✅ Kategori diperbarui');
+    document.getElementById('editImgModal').classList.remove('open');
+    renderGrid();
+  } catch(e) {
+    showSync('Gagal ⚠','error');
+    toast('❌ '+e.message);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   DELETE
+═══════════════════════════════════════════════════════ */
+async function delItem(id, key) {
+  if (!confirm('Hapus item ini dari moodboard?')) return;
+  const card = document.getElementById('mbc-'+id);
+  if (card) card.classList.add('removing');
+  showSync('Menghapus...');
+  try {
+    await mbApi.del(id);
+    if (key) await mbApi.delFile(key).catch(()=>{}); // best-effort storage delete
+    mbData = mbData.filter(m=>m.id!==id);
+    showSync('Dihapus ✓','success');
+    toast('🗑 Item dihapus');
+    setTimeout(() => renderGrid(), 220);
+  } catch(e) {
+    if (card) card.classList.remove('removing');
+    showSync('Gagal ⚠','error');
+    toast('❌ '+e.message);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   LIGHTBOX
+═══════════════════════════════════════════════════════ */
+async function openLightbox(id) {
+  const item = mbData.find(m=>m.id===id);
+  if (!item || item.type !== 'image') return;
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbSpin = document.getElementById('lbSpin');
+  const lbMeta = document.getElementById('lbMeta');
+  lb.classList.add('open');
+  lbImg.style.display = 'none'; lbSpin.style.display = 'block';
+  lbMeta.textContent = (item.section||'') + (item.title ? ' — ' + item.title : '');
+  try {
+    const url = await getViewUrl(item.content);
+    if (url) { lbImg.src = url; lbImg.onload = () => { lbSpin.style.display='none'; lbImg.style.display='block'; }; }
+    else throw new Error('URL kosong');
+  } catch(e) {
+    lbSpin.style.display='none';
+    lbMeta.textContent = '❌ Gagal memuat foto';
+    lb.classList.remove('open');
+    toast('❌ Gagal membuka foto: '+e.message);
+  }
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lbImg').src = '';
+  document.getElementById('lbImg').style.display = 'none';
+  document.getElementById('lbSpin').style.display = 'block';
+}
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target === document.getElementById('lightbox')) closeLightbox();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeLightbox();
+    document.querySelectorAll('.modal-bg.open').forEach(m=>m.classList.remove('open'));
+  }
+});
+
+/* ═══════════════════════════════════════════════════════
+   EXPORT
+═══════════════════════════════════════════════════════ */
+async function exportMoodboard() {
+  const overlay = document.getElementById('exportOverlay');
+  const msg     = document.getElementById('exportMsg');
+  overlay.classList.add('show');
+  msg.textContent = 'Memuat foto untuk export...';
+
+  try {
+    // Load html2canvas dynamically
+    if (!window.html2canvas) {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+        s.onload = res; s.onerror = rej;
+        document.head.appendChild(s);
+      });
+    }
+
+    // Pre-load all visible images to absolute URLs
+    const imgs = document.querySelectorAll('img.mb-img[data-key]');
+    let loaded = 0;
+    const total = imgs.length;
+    for (const img of imgs) {
+      const key = img.dataset.key;
+      if (key && !img.src) {
+        const url = await getViewUrl(key);
+        if (url) img.src = url;
+      }
+      loaded++;
+      msg.textContent = `Memuat foto ${loaded}/${total}...`;
+    }
+
+    // Wait a bit for images to render
+    await new Promise(r => setTimeout(r, 1000));
+    msg.textContent = 'Membuat gambar moodboard...';
+
+    const grid = document.getElementById('mbGrid');
+    const canvas = await html2canvas(grid, {
+      backgroundColor: '#0a0612',
+      scale: 1.5,
+      useCORS: true,
+      allowTaint: false,
+      logging: false,
+    });
+
+    msg.textContent = 'Mengunduh...';
+    const link = document.createElement('a');
+    link.download = 'moodboard-zultoni-beska.jpg';
+    link.href = canvas.toDataURL('image/jpeg', 0.92);
+    link.click();
+
+    toast('✅ Moodboard berhasil diexport!');
+  } catch(e) {
+    console.error('[export]', e);
+    toast('❌ Export gagal: ' + e.message);
+  }
+  overlay.classList.remove('show');
+}
+
+/* ═══════════════════════════════════════════════════════
+   CLOSE MODALS on BG click
+═══════════════════════════════════════════════════════ */
+document.querySelectorAll('.modal-bg').forEach(bg => {
+  bg.addEventListener('click', e => { if (e.target === bg) bg.classList.remove('open'); });
+});
+
+/* ═══════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════ */
+window.addEventListener('load', () => {
+  loadMoodboard();
+  // Auto-refresh every 30 seconds
+  setInterval(loadMoodboard, 30000);
+  // Refresh on visibility change
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') loadMoodboard();
+  });
+});
+</script>
+</body>
+</html>
