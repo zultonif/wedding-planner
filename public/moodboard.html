@@ -941,8 +941,9 @@ async function startUpload() {
       mbData.unshift({ id: String(id), type: 'image', content: presign.key, section, title: '', note: '', createdAt: new Date().toISOString() });
 
     } catch(e) {
-      setStatus('❌'); fail++;
+      setStatus('❌ ' + e.message); fail++;
       console.error('[upload]', f.name, e);
+      toast('❌ ' + f.name + ': ' + e.message, 6000);
     }
   }
 
@@ -956,7 +957,6 @@ async function startUpload() {
   } else {
     btn.disabled = false;
     showSync('Gagal ⚠', 'error');
-    toast('❌ Gagal upload semua foto');
   }
 }
 
