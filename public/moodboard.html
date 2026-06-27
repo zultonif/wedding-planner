@@ -121,6 +121,14 @@
       transition:all .15s;white-space:nowrap;
     }
     .sec-chip-add:hover{background:var(--gold-pale);border-color:var(--gold)}
+    .sec-chip-del{
+      display:inline-flex;align-items:center;justify-content:center;
+      margin-left:5px;width:13px;height:13px;border-radius:50%;
+      background:rgba(255,255,255,.1);color:var(--text-muted);
+      font-size:9px;line-height:1;cursor:pointer;transition:all .15s;
+      border:none;padding:0;font-family:inherit;vertical-align:middle;
+    }
+    .sec-chip-del:hover{background:var(--danger-bg);color:var(--danger)}
 
     /* ══ CANVAS AREA ══ */
     .mb-canvas{
@@ -809,7 +817,10 @@ function lazyLoadImages() {
       if (!entry.isIntersecting) continue;
       const img = entry.target;
       const key = img.dataset.key;
-      if (!key || img.src) { obs.unobserve(img); continue; }
+      // Cek apakah sudah ada URL yang valid (bukan string kosong)
+      if (!key || (img.src && img.src !== window.location.href && !img.src.endsWith('/'))) {
+        obs.unobserve(img); continue;
+      }
       obs.unobserve(img);
       const url = await getViewUrl(key);
       if (url) img.src = url;
@@ -840,11 +851,12 @@ function addCustomSection() {
   if (!name || !name.trim()) return;
   const n = name.trim();
   const bar = document.getElementById('sectionBar');
-  // Add chip
+  // Add chip with delete button
   const chip = document.createElement('button');
   chip.className = 'sec-chip';
   chip.dataset.sec = n;
-  chip.textContent = n;
+  chip.innerHTML = n + '<span class="sec-chip-del" title="Hapus kategori" onclick="event.stopPropagation();removeCustomSection(this,this.dataset.secname)">✕</span>';
+  chip.querySelector('.sec-chip-del').dataset.secname = n;
   chip.onclick = () => filterSection(n);
   bar.insertBefore(chip, bar.querySelector('.sec-chip-add'));
   // Add to selects
@@ -857,6 +869,22 @@ function addCustomSection() {
     }
   });
   filterSection(n);
+}
+
+function removeCustomSection(btn, name) {
+  if (!confirm('Hapus kategori "' + name + '"?')) return;
+  const chip = btn.closest('.sec-chip');
+  if (chip) chip.remove();
+  // Remove from selects
+  ['uplSection','txtSection','editImgSection'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (sel) {
+      const opt = sel.querySelector('option[value="' + name + '"]');
+      if (opt) opt.remove();
+    }
+  });
+  // If currently filtered by this section, reset to all
+  if (activeSection === name) filterSection('all');
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -951,8 +979,9 @@ async function startUpload() {
       setProg(100); setStatus('✅');
       ok++;
 
-      // Add to local state and render card
+      // Add to local state and render card immediately
       mbData.unshift({ id: String(id), type: 'image', content: presign.key, section, title: '', note: '', createdAt: new Date().toISOString() });
+      renderGrid(); // tampilkan langsung tanpa tunggu semua file selesai
 
     } catch(e) {
       setStatus('❌ ' + e.message); fail++;
