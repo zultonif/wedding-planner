@@ -692,8 +692,6 @@ function showSync(txt, type='') {
 ═══════════════════════════════════════════════════════ */
 async function loadMoodboard(isBackground = false) {
   const grid = document.getElementById('mbGrid');
-  // Hanya tampilkan spinner full-screen kalau ini load PERTAMA KALI (grid masih kosong).
-  // Auto-refresh di background TIDAK BOLEH menghapus foto yang sudah tampil.
   if (!isBackground) {
     grid.innerHTML = '<div class="mb-loading"><div class="spin"></div><div class="loading-txt">Memuat moodboard...</div></div>';
   } else {
@@ -702,18 +700,27 @@ async function loadMoodboard(isBackground = false) {
   try {
     const raw = await mbApi.load();
     // raw = [[header], [row], ...]
-    mbData = [];
+    const newData = [];
     for (let i = 1; i < raw.length; i++) {
       const r = raw[i];
-      if (!r[0]) continue;
-      mbData.push({ id: String(r[0]), type: r[1]||'image', content: r[2]||'', section: r[3]||'Lainnya', title: r[4]||'', note: r[5]||'', createdAt: r[6]||'' });
+      // Skip baris yang kolom A-nya kosong (data rusak/salah posisi di sheet)
+      if (!r[0] || r[0] === '') continue;
+      // Kolom harus ada di posisi benar: B=type, C=content, D=section
+      if (!r[1] || !r[2]) continue;
+      newData.push({ id: String(r[0]), type: r[1]||'image', content: r[2]||'', section: r[3]||'Lainnya', title: r[4]||'', note: r[5]||'', createdAt: r[6]||'' });
     }
+    // Guard: jangan timpa data yang sudah ada dengan hasil yang lebih sedikit
+    // (bisa terjadi saat data baru belum sync ke sheet, atau ada error parsing)
+    if (isBackground && newData.length < mbData.length) {
+      console.warn('[moodboard] background refresh menghasilkan lebih sedikit data, diabaikan');
+      showSync('Tersinkron ✓', 'success');
+      return;
+    }
+    mbData = newData;
     renderGrid();
     if (isBackground) showSync('Tersinkron ✓', 'success');
   } catch(e) {
     if (isBackground) {
-      // Refresh background gagal (misal koneksi/Sheets API lagi lambat) —
-      // JANGAN timpa foto yang sudah tampil dengan layar error. Diamkan, coba lagi 30 detik berikutnya.
       console.warn('[moodboard] auto-refresh gagal, foto lama tetap ditampilkan:', e.message);
       showSync('Gagal sinkron ⚠', 'error');
     } else {
