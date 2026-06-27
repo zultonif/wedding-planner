@@ -448,13 +448,103 @@
     .dot-prewedding{background:#a05caa;color:#fff}
     .dot-lainnya{background:rgba(255,255,255,.15);color:#c8b8e0}
 
-    /* ══ RESPONSIVE ══ */
+    /* ══ RESPONSIVE MOBILE ══ */
     @media(max-width:600px){
+
+      /* Toolbar: sembunyikan search & teks label, kompres */
       .tb-search{display:none}
       .tb-btn span{display:none}
-      .tb-btn{padding:6px 9px}
+      .tb-btn{padding:7px 10px;border-radius:9px}
+      .tb-btn svg{width:15px;height:15px}
       .tb-logo span{display:none}
-      .mb-fab{padding:10px 18px;font-size:12px}
+      .tb-divider{display:none}
+      .back-btn span{display:none}
+      .back-btn{padding:5px 8px}
+      .mb-toolbar{gap:4px;padding:0 10px;height:52px}
+      :root{--toolbar-h:52px}
+
+      /* Section bar: lebih compact */
+      .section-bar{padding:6px 10px;gap:5px}
+      .sec-chip{padding:5px 11px;font-size:10px}
+      .sec-chip-add{padding:5px 10px;font-size:10px}
+      .mb-canvas{top:calc(var(--toolbar-h) + 40px);padding:10px 10px 140px}
+
+      /* Grid: 2 kolom rapat di mobile */
+      .mb-grid{columns:2;column-gap:8px}
+      .mb-card{border-radius:12px;margin-bottom:8px}
+
+      /* Image card: overlay tombol selalu tampil di mobile (tidak pakai hover) */
+      .mb-img-overlay{
+        opacity:1 !important;
+        background:linear-gradient(to bottom,transparent 40%,rgba(10,6,18,.9) 100%);
+        padding:8px;gap:4px;
+      }
+      .mb-overlay-btn{padding:4px 7px;font-size:9px;gap:3px}
+      .mb-img-meta{padding:7px 9px}
+      .mb-sec-badge{font-size:7px;padding:2px 6px;max-width:80px}
+      .mb-img-actions{display:none} /* sembunyikan duplikat tombol footer di mobile */
+
+      /* Text card */
+      .mb-text-card{padding:13px 12px}
+      .mb-text-title{font-size:13px}
+      .mb-text-note{font-size:11px;margin-bottom:9px}
+
+      /* Empty state */
+      .mb-empty{padding:40px 16px}
+      .mb-empty-icon{font-size:44px}
+      .mb-empty h3{font-size:17px}
+      .mb-empty p{font-size:12px}
+
+      /* FAB: lebih kecil, geser sedikit ke kiri biar tidak tutup sync */
+      .mb-fab{
+        padding:10px 18px;font-size:12px;
+        bottom:16px;
+      }
+
+      /* Quick bar: stack vertikal di mobile supaya tidak terpotong */
+      .sec-quick-bar{
+        flex-direction:column;border-radius:16px;padding:10px 12px;
+        gap:8px;bottom:80px;width:calc(100vw - 32px);max-width:280px;
+      }
+      .sec-quick-div{width:100%;height:1px}
+      .sec-quick-btn{justify-content:center;padding:9px 0;width:100%}
+      .sec-quick-label{font-size:11px}
+
+      /* Sync indicator: lebih kecil */
+      .mb-sync{bottom:14px;right:12px;font-size:9px;padding:4px 10px}
+
+      /* Modal: full-width dengan padding pas */
+      .modal{padding:20px 16px;border-radius:16px;max-height:95vh}
+      .modal h3{font-size:15px;margin-bottom:14px}
+      .modal-field input,.modal-field textarea,.modal-field select{
+        font-size:16px; /* Hindari iOS auto-zoom */
+        padding:11px 13px;
+      }
+      .modal-actions{gap:8px}
+      .m-btn{padding:11px 16px;font-size:13px}
+
+      /* Upload modal zone */
+      .upload-modal-zone{padding:20px 14px}
+      .upl-icon-big{font-size:30px;margin-bottom:6px}
+      .upl-hint{font-size:11px}
+      .upl-hint strong{font-size:13px}
+      .upl-queue{max-height:160px}
+      .upl-sec-select{font-size:16px} /* Hindari iOS auto-zoom */
+
+      /* Lightbox */
+      .lb-img-wrap{max-width:100vw;max-height:75vh}
+      .lb-img{max-height:75vh;border-radius:8px}
+      .lb-close{top:12px;right:12px;width:32px;height:32px;font-size:14px}
+    }
+
+    /* Touch device: overlay selalu tampil */
+    body.touch-device .mb-img-overlay{opacity:1 !important}
+    body.touch-device .mb-card:hover{transform:none;box-shadow:none}
+
+    /* Layar sangat kecil: 1 kolom */
+    @media(max-width:360px){
+      .mb-grid{columns:1}
+      .mb-toolbar{gap:3px;padding:0 8px}
     }
   </style>
 </head>
@@ -1297,6 +1387,10 @@ window.addEventListener('load', () => {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') loadMoodboard(true);
   });
+  // Deteksi touch device — tambahkan class ke body agar CSS bisa target
+  if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+    document.body.classList.add('touch-device');
+  }
 });
 </script>
 </body>
