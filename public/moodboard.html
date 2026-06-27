@@ -129,6 +129,21 @@
       border:none;padding:0;font-family:inherit;vertical-align:middle;
     }
     .sec-chip-del:hover{background:var(--danger-bg);color:var(--danger)}
+    .sec-chip-actions{
+      display:inline-flex;align-items:center;gap:3px;
+      margin-left:6px;opacity:0;pointer-events:none;
+      transition:opacity .15s;vertical-align:middle;
+    }
+    .sec-chip.active .sec-chip-actions{opacity:1;pointer-events:auto}
+    .sec-chip-act{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:18px;height:18px;border-radius:99px;
+      border:1px solid rgba(201,163,88,.4);
+      background:rgba(201,163,88,.15);color:var(--gold-l);
+      font-size:9px;line-height:1;cursor:pointer;transition:all .15s;
+      padding:0;font-family:inherit;font-weight:700;
+    }
+    .sec-chip-act:hover{background:rgba(201,163,88,.35);border-color:var(--gold)}
 
     /* ══ CANVAS AREA ══ */
     .mb-canvas{
@@ -489,14 +504,14 @@
 <!-- SECTION FILTER BAR -->
 <div class="section-bar" id="sectionBar">
   <button class="sec-chip active" data-sec="all" onclick="filterSection('all')">✨ Semua</button>
-  <button class="sec-chip" data-sec="Venue" onclick="filterSection('Venue')">🏛 Venue</button>
-  <button class="sec-chip" data-sec="Dekorasi" onclick="filterSection('Dekorasi')">🌸 Dekorasi</button>
-  <button class="sec-chip" data-sec="Dress" onclick="filterSection('Dress')">👗 Dress</button>
-  <button class="sec-chip" data-sec="Makeup" onclick="filterSection('Makeup')">💄 Makeup</button>
-  <button class="sec-chip" data-sec="Catering" onclick="filterSection('Catering')">🍽 Catering</button>
-  <button class="sec-chip" data-sec="Souvenir" onclick="filterSection('Souvenir')">🎁 Souvenir</button>
-  <button class="sec-chip" data-sec="Dokumentasi" onclick="filterSection('Dokumentasi')">📸 Dokumentasi</button>
-  <button class="sec-chip" data-sec="Prewedding" onclick="filterSection('Prewedding')">💑 Prewedding</button>
+  <button class="sec-chip" data-sec="Venue" onclick="filterSection('Venue')">🏛 Venue<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Venue" onclick="event.stopPropagation();openUploadModalForSection('Venue')">📷</button><button class="sec-chip-act" title="Tambah teks ke Venue" onclick="event.stopPropagation();openTextModal(null,'Venue')">✏</button></span></button>
+  <button class="sec-chip" data-sec="Dekorasi" onclick="filterSection('Dekorasi')">🌸 Dekorasi<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Dekorasi" onclick="event.stopPropagation();openUploadModalForSection('Dekorasi')">📷</button><button class="sec-chip-act" title="Tambah teks ke Dekorasi" onclick="event.stopPropagation();openTextModal(null,'Dekorasi')">✏</button></span></button>
+  <button class="sec-chip" data-sec="Dress" onclick="filterSection('Dress')">👗 Dress<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Dress" onclick="event.stopPropagation();openUploadModalForSection('Dress')">📷</button><button class="sec-chip-act" title="Tambah teks ke Dress" onclick="event.stopPropagation();openTextModal(null,'Dress')">✏</button></span></button>
+  <button class="sec-chip" data-sec="Makeup" onclick="filterSection('Makeup')">💄 Makeup<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Makeup" onclick="event.stopPropagation();openUploadModalForSection('Makeup')">📷</button><button class="sec-chip-act" title="Tambah teks ke Makeup" onclick="event.stopPropagation();openTextModal(null,'Makeup')">✏</button></span></button>
+  <button class="sec-chip" data-sec="Catering" onclick="filterSection('Catering')">🍽 Catering<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Catering" onclick="event.stopPropagation();openUploadModalForSection('Catering')">📷</button><button class="sec-chip-act" title="Tambah teks ke Catering" onclick="event.stopPropagation();openTextModal(null,'Catering')">✏</button></span></button>
+  <button class="sec-chip" data-sec="Souvenir" onclick="filterSection('Souvenir')">🎁 Souvenir<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Souvenir" onclick="event.stopPropagation();openUploadModalForSection('Souvenir')">📷</button><button class="sec-chip-act" title="Tambah teks ke Souvenir" onclick="event.stopPropagation();openTextModal(null,'Souvenir')">✏</button></span></button>
+  <button class="sec-chip" data-sec="Dokumentasi" onclick="filterSection('Dokumentasi')">📸 Dokumentasi<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Dokumentasi" onclick="event.stopPropagation();openUploadModalForSection('Dokumentasi')">📷</button><button class="sec-chip-act" title="Tambah teks ke Dokumentasi" onclick="event.stopPropagation();openTextModal(null,'Dokumentasi')">✏</button></span></button>
+  <button class="sec-chip" data-sec="Prewedding" onclick="filterSection('Prewedding')">💑 Prewedding<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Prewedding" onclick="event.stopPropagation();openUploadModalForSection('Prewedding')">📷</button><button class="sec-chip-act" title="Tambah teks ke Prewedding" onclick="event.stopPropagation();openTextModal(null,'Prewedding')">✏</button></span></button>
   <button class="sec-chip-add" onclick="addCustomSection()">＋ Kategori Baru</button>
 </div>
 
@@ -862,7 +877,8 @@ function addCustomSection() {
   const chip = document.createElement('button');
   chip.className = 'sec-chip';
   chip.dataset.sec = n;
-  chip.innerHTML = n + '<span class="sec-chip-del" title="Hapus kategori" onclick="event.stopPropagation();removeCustomSection(this,this.dataset.secname)">✕</span>';
+  chip.innerHTML = n + '<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke ' + n + '" onclick="event.stopPropagation();openUploadModalForSection(this.dataset.s)">📷</button><button class="sec-chip-act" title="Tambah teks ke ' + n + '" onclick="event.stopPropagation();openTextModal(null,this.dataset.s)">✏</button></span><span class="sec-chip-del" title="Hapus kategori" onclick="event.stopPropagation();removeCustomSection(this,this.dataset.secname)">✕</span>';
+  chip.querySelectorAll('.sec-chip-act').forEach(b => b.dataset.s = n);
   chip.querySelector('.sec-chip-del').dataset.secname = n;
   chip.onclick = () => filterSection(n);
   bar.insertBefore(chip, bar.querySelector('.sec-chip-add'));
@@ -903,6 +919,12 @@ function openUploadModal() {
   document.getElementById('uploadFileInput').value = '';
   document.getElementById('uplStartBtn').disabled = true;
   document.getElementById('uploadModal').classList.add('open');
+}
+function openUploadModalForSection(sec) {
+  openUploadModal();
+  // Pre-set section dropdown setelah modal terbuka
+  const sel = document.getElementById('uplSection');
+  if (sel) sel.value = sec;
 }
 function closeUploadModal() {
   document.getElementById('uploadModal').classList.remove('open');
@@ -1013,14 +1035,18 @@ async function startUpload() {
 /* ═══════════════════════════════════════════════════════
    TEXT CARD
 ═══════════════════════════════════════════════════════ */
-function openTextModal(id=null) {
+function openTextModal(id=null, presetSection=null) {
   editingTextId = id;
   const t = document.getElementById('textModalTitle');
   const item = id ? mbData.find(m=>m.id===id) : null;
   t.textContent = id ? '✏️ Edit Catatan' : '✏️ Tambah Catatan';
   document.getElementById('txtTitle').value = item ? (item.title||'') : '';
   document.getElementById('txtNote').value  = item ? (item.note||'')  : '';
-  document.getElementById('txtSection').value = item ? (item.section||'Lainnya') : 'Lainnya';
+  // Pakai presetSection jika ada (dari klik tombol di chip), else activeSection, else item.section
+  const sec = item ? (item.section||'Lainnya')
+              : presetSection ? presetSection
+              : (activeSection !== 'all' ? activeSection : 'Lainnya');
+  document.getElementById('txtSection').value = sec;
   document.getElementById('textModal').classList.add('open');
 }
 function closeTextModal() {
