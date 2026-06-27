@@ -129,21 +129,32 @@
       border:none;padding:0;font-family:inherit;vertical-align:middle;
     }
     .sec-chip-del:hover{background:var(--danger-bg);color:var(--danger)}
-    .sec-chip-actions{
-      display:inline-flex;align-items:center;gap:3px;
-      margin-left:6px;opacity:0;pointer-events:none;
-      transition:opacity .15s;vertical-align:middle;
+    /* ══ SECTION QUICK ACTIONS BAR ══ */
+    .sec-quick-bar{
+      display:none;
+      position:fixed;bottom:72px;left:50%;transform:translateX(-50%);
+      z-index:201;
+      background:rgba(17,8,32,.92);backdrop-filter:blur(16px);
+      border:1px solid var(--border-gold);border-radius:99px;
+      padding:6px 8px;gap:6px;align-items:center;
+      box-shadow:0 8px 32px rgba(0,0,0,.5);
     }
-    .sec-chip.active .sec-chip-actions{opacity:1;pointer-events:auto}
-    .sec-chip-act{
-      display:inline-flex;align-items:center;justify-content:center;
-      width:18px;height:18px;border-radius:99px;
-      border:1px solid rgba(201,163,88,.4);
-      background:rgba(201,163,88,.15);color:var(--gold-l);
-      font-size:9px;line-height:1;cursor:pointer;transition:all .15s;
-      padding:0;font-family:inherit;font-weight:700;
+    .sec-quick-bar.show{display:flex}
+    .sec-quick-label{
+      font-size:10px;color:var(--gold);font-weight:700;
+      letter-spacing:.06em;padding:0 6px;white-space:nowrap;
     }
-    .sec-chip-act:hover{background:rgba(201,163,88,.35);border-color:var(--gold)}
+    .sec-quick-btn{
+      display:inline-flex;align-items:center;gap:5px;
+      border:1px solid rgba(201,163,88,.35);border-radius:99px;
+      background:rgba(201,163,88,.12);color:var(--gold-l);
+      padding:6px 14px;font-size:11px;font-weight:600;
+      cursor:pointer;transition:all .15s;white-space:nowrap;
+      font-family:'DM Sans',sans-serif;
+    }
+    .sec-quick-btn:hover{background:rgba(201,163,88,.25);border-color:var(--gold);transform:translateY(-1px)}
+    .sec-quick-btn:active{transform:scale(.97)}
+    .sec-quick-div{width:1px;height:20px;background:var(--border)}
 
     /* ══ CANVAS AREA ══ */
     .mb-canvas{
@@ -504,14 +515,14 @@
 <!-- SECTION FILTER BAR -->
 <div class="section-bar" id="sectionBar">
   <button class="sec-chip active" data-sec="all" onclick="filterSection('all')">✨ Semua</button>
-  <button class="sec-chip" data-sec="Venue" onclick="filterSection('Venue')">🏛 Venue<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Venue" onclick="event.stopPropagation();openUploadModalForSection('Venue')">📷</button><button class="sec-chip-act" title="Tambah teks ke Venue" onclick="event.stopPropagation();openTextModal(null,'Venue')">✏</button></span></button>
-  <button class="sec-chip" data-sec="Dekorasi" onclick="filterSection('Dekorasi')">🌸 Dekorasi<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Dekorasi" onclick="event.stopPropagation();openUploadModalForSection('Dekorasi')">📷</button><button class="sec-chip-act" title="Tambah teks ke Dekorasi" onclick="event.stopPropagation();openTextModal(null,'Dekorasi')">✏</button></span></button>
-  <button class="sec-chip" data-sec="Dress" onclick="filterSection('Dress')">👗 Dress<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Dress" onclick="event.stopPropagation();openUploadModalForSection('Dress')">📷</button><button class="sec-chip-act" title="Tambah teks ke Dress" onclick="event.stopPropagation();openTextModal(null,'Dress')">✏</button></span></button>
-  <button class="sec-chip" data-sec="Makeup" onclick="filterSection('Makeup')">💄 Makeup<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Makeup" onclick="event.stopPropagation();openUploadModalForSection('Makeup')">📷</button><button class="sec-chip-act" title="Tambah teks ke Makeup" onclick="event.stopPropagation();openTextModal(null,'Makeup')">✏</button></span></button>
-  <button class="sec-chip" data-sec="Catering" onclick="filterSection('Catering')">🍽 Catering<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Catering" onclick="event.stopPropagation();openUploadModalForSection('Catering')">📷</button><button class="sec-chip-act" title="Tambah teks ke Catering" onclick="event.stopPropagation();openTextModal(null,'Catering')">✏</button></span></button>
-  <button class="sec-chip" data-sec="Souvenir" onclick="filterSection('Souvenir')">🎁 Souvenir<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Souvenir" onclick="event.stopPropagation();openUploadModalForSection('Souvenir')">📷</button><button class="sec-chip-act" title="Tambah teks ke Souvenir" onclick="event.stopPropagation();openTextModal(null,'Souvenir')">✏</button></span></button>
-  <button class="sec-chip" data-sec="Dokumentasi" onclick="filterSection('Dokumentasi')">📸 Dokumentasi<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Dokumentasi" onclick="event.stopPropagation();openUploadModalForSection('Dokumentasi')">📷</button><button class="sec-chip-act" title="Tambah teks ke Dokumentasi" onclick="event.stopPropagation();openTextModal(null,'Dokumentasi')">✏</button></span></button>
-  <button class="sec-chip" data-sec="Prewedding" onclick="filterSection('Prewedding')">💑 Prewedding<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke Prewedding" onclick="event.stopPropagation();openUploadModalForSection('Prewedding')">📷</button><button class="sec-chip-act" title="Tambah teks ke Prewedding" onclick="event.stopPropagation();openTextModal(null,'Prewedding')">✏</button></span></button>
+  <button class="sec-chip" data-sec="Venue" onclick="filterSection('Venue')">🏛 Venue</button>
+  <button class="sec-chip" data-sec="Dekorasi" onclick="filterSection('Dekorasi')">🌸 Dekorasi</button>
+  <button class="sec-chip" data-sec="Dress" onclick="filterSection('Dress')">👗 Dress</button>
+  <button class="sec-chip" data-sec="Makeup" onclick="filterSection('Makeup')">💄 Makeup</button>
+  <button class="sec-chip" data-sec="Catering" onclick="filterSection('Catering')">🍽 Catering</button>
+  <button class="sec-chip" data-sec="Souvenir" onclick="filterSection('Souvenir')">🎁 Souvenir</button>
+  <button class="sec-chip" data-sec="Dokumentasi" onclick="filterSection('Dokumentasi')">📸 Dokumentasi</button>
+  <button class="sec-chip" data-sec="Prewedding" onclick="filterSection('Prewedding')">💑 Prewedding</button>
   <button class="sec-chip-add" onclick="addCustomSection()">＋ Kategori Baru</button>
 </div>
 
@@ -527,6 +538,20 @@
   </svg>
   Upload Foto
 </button>
+
+<!-- SECTION QUICK BAR — muncul saat kategori selain "Semua" aktif -->
+<div class="sec-quick-bar" id="secQuickBar">
+  <span class="sec-quick-label" id="secQuickLabel">Venue</span>
+  <div class="sec-quick-div"></div>
+  <button class="sec-quick-btn" onclick="openUploadModalForSection(activeSection)">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    Upload Foto
+  </button>
+  <button class="sec-quick-btn" onclick="openTextModal(null, activeSection)">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    Add Teks
+  </button>
+</div>
 
 <!-- TOAST -->
 <div id="mbToast"></div>
@@ -860,6 +885,15 @@ function filterSection(sec) {
   document.querySelectorAll('.sec-chip').forEach(c => {
     c.classList.toggle('active', c.dataset.sec === sec);
   });
+  // Tampilkan quick bar hanya saat kategori spesifik aktif (bukan "Semua")
+  const bar = document.getElementById('secQuickBar');
+  const lbl = document.getElementById('secQuickLabel');
+  if (sec !== 'all') {
+    lbl.textContent = sec;
+    bar.classList.add('show');
+  } else {
+    bar.classList.remove('show');
+  }
   renderGrid();
 }
 
@@ -877,8 +911,7 @@ function addCustomSection() {
   const chip = document.createElement('button');
   chip.className = 'sec-chip';
   chip.dataset.sec = n;
-  chip.innerHTML = n + '<span class="sec-chip-actions"><button class="sec-chip-act" title="Upload foto ke ' + n + '" onclick="event.stopPropagation();openUploadModalForSection(this.dataset.s)">📷</button><button class="sec-chip-act" title="Tambah teks ke ' + n + '" onclick="event.stopPropagation();openTextModal(null,this.dataset.s)">✏</button></span><span class="sec-chip-del" title="Hapus kategori" onclick="event.stopPropagation();removeCustomSection(this,this.dataset.secname)">✕</span>';
-  chip.querySelectorAll('.sec-chip-act').forEach(b => b.dataset.s = n);
+  chip.innerHTML = n + '<span class="sec-chip-del" title="Hapus kategori" onclick="event.stopPropagation();removeCustomSection(this,this.dataset.secname)">✕</span>';
   chip.querySelector('.sec-chip-del').dataset.secname = n;
   chip.onclick = () => filterSection(n);
   bar.insertBefore(chip, bar.querySelector('.sec-chip-add'));
@@ -1125,16 +1158,24 @@ async function delItem(id, key) {
   showSync('Menghapus...');
   try {
     await mbApi.del(id);
-    if (key) await mbApi.delFile(key).catch(()=>{}); // best-effort storage delete
-    mbData = mbData.filter(m=>m.id!==id);
-    showSync('Dihapus ✓','success');
-    toast('🗑 Item dihapus');
-    setTimeout(() => renderGrid(), 220);
   } catch(e) {
-    if (card) card.classList.remove('removing');
-    showSync('Gagal ⚠','error');
-    toast('❌ '+e.message);
+    // Jika error "Item tidak ditemukan" di sheet, tetap hapus dari local state
+    // (data mungkin sudah terhapus atau id-nya offset). Lanjutkan saja.
+    if (!e.message.includes('tidak ditemukan') && !e.message.includes('not found')) {
+      if (card) card.classList.remove('removing');
+      showSync('Gagal ⚠','error');
+      toast('❌ '+e.message);
+      return;
+    }
+    console.warn('[delItem] item tidak ada di sheet, hapus dari local state saja:', e.message);
   }
+  // Hapus file di storage (best-effort)
+  if (key) await mbApi.delFile(key).catch(()=>{});
+  // Hapus dari local state dan re-render
+  mbData = mbData.filter(m=>m.id!==id);
+  showSync('Dihapus ✓','success');
+  toast('🗑 Item dihapus');
+  setTimeout(() => renderGrid(), 220);
 }
 
 /* ═══════════════════════════════════════════════════════
